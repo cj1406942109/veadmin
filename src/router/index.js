@@ -1,11 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import Layout from '@/layout'
 import Dashboard from '@/views/dashboard'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [
     { path: '/login', hidden: true },
     {
@@ -18,3 +20,16 @@ export default new Router({
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  // start progress bar
+  NProgress.start()
+  next()
+})
+
+router.afterEach(() => {
+  // finish progress bar
+  NProgress.done()
+})
+
+export default router
