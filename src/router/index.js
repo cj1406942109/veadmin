@@ -4,12 +4,15 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import Layout from '@/layout'
 import Dashboard from '@/views/dashboard'
+import Login from '@/views/Login'
 
 Vue.use(Router)
 
 const router = new Router({
   routes: [
-    { path: '/login', hidden: true },
+    // 后期修改为 lazy-loading 方式
+    // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
+    { path: '/login', component: Login },
     {
       path: '',
       component: Layout,
