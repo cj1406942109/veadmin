@@ -1,10 +1,10 @@
 <template>
   <div class="app-footer">
-    <span>2017 © <abbr title="Intelligent Medical">IM</abbr> </span>
-     <span>Powered by <abbr title="WuHan University">WHU</abbr> |
-       <a target="_blank" href="http://www.libingteam.com">LiBingTeam</a>
-     </span>
-     <div class="back-top" title="返回顶部" @click="handlebackTop" v-show="!backTop.hidden"><svg-icon icon-class="back-top"></svg-icon></div>
+    <span>{{new Date().getFullYear()}} &copy;<abbr title="Intelligent Medical">IM</abbr> </span>
+    <span>Powered by <abbr title="WuHan University">WHU</abbr> |
+      <a target="_blank" href="javascript:;">LiBingTeam</a>
+    </span>
+    <div class="back-top" title="返回顶部" @click="handlebackTop" v-show="!backTop.hidden"><svg-icon icon-class="back-top"></svg-icon></div>
   </div>
 </template>
 

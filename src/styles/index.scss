@@ -3,3 +3,8 @@
 body {
   -webkit-tap-highlight-color: transparent;//解决手机端点击出现浅蓝色背景
 }
+
+a {
+  text-decoration: none;
+  color: $hrefColor;
+}
