@@ -6,9 +6,13 @@
       </el-header>
       <el-main>
         <el-row :gutter="20">
-          <el-col :xs="24" :sm="12" :md="12" :lg="16">
+          <el-col :xs="24" :sm="12" :md="12" :lg="16" class="hidden-xs-only">
             <div class="info-wrapper">
-              <!-- <img src="./tongji.jpg" alt="同济医院"> -->
+                <el-carousel indicator-position="outside" height="485px" :interval="5000">
+                  <el-carousel-item v-for="item in 3" :key="item">
+                    <img :src="imgList[item-1]" alt="同济医院">
+                  </el-carousel-item>
+                </el-carousel>
             </div>
           </el-col>
           <el-col :xs="24" :sm="12" :md="12" :lg="8">
@@ -26,7 +30,7 @@
                   </el-form-item>
                   <el-form-item label="用户类型" prop="userType">
                     <el-radio-group v-model="loginForm.userType">
-                      <el-radio v-for="userType in userTypeList" :key="userType.id" :label="userType.index">{{userType.label}}</el-radio>
+                      <el-radio v-for="userType in userTypeList" :key="userType.id" :label="userType">{{userType.label}}</el-radio>
                     </el-radio-group>
                   </el-form-item>
                   <el-form-item class="form-action">
@@ -49,10 +53,17 @@
 </template>
 
 <script>
+import img1 from './tongji_1.jpg'
+import img2 from './tongji_2.jpg'
+import img3 from './tongji_3.jpg'
+
 export default {
   name: 'login',
   data () {
     return {
+      imgList: [
+        img1, img2, img3
+      ],
       loginForm: {
         username: '',
         password: '',
@@ -85,17 +96,41 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.formStatus.loading = true
-          this.$message({
-            showClose: true,
-            message: '登录成功',
-            type: 'success'
+          this.$store.dispatch('Login', this.loginForm).then((response) => {
+            this.formStatus.loading = false
+            const data = response.data
+            if (data.code === 200) {
+              this.$message({
+                showClose: true,
+                message: '登录成功',
+                type: 'success'
+              })
+              // 跳转到dashboard页面
+              this.$router.push({ path: '/' })
+            } else if (data.code === 401) {
+              this.$message({
+                showClose: true,
+                message: '用户不存在',
+                type: 'error'
+              })
+            } else if (data.code === 402) {
+              this.$message({
+                showClose: true,
+                message: '用户名或密码错误',
+                type: 'error'
+              })
+            } else {
+              console.log(data)
+              this.$message({
+                showClose: true,
+                message: '登录出错，请稍候再试',
+                type: 'error'
+              })
+            }
+          }).catch(() => {
+            this.formStatus.loading = false
           })
         } else {
-          this.$message({
-            showClose: true,
-            message: '登录前请先填写账户信息',
-            type: 'error'
-          })
           console.log('error submit!!')
           return false
         }
@@ -108,27 +143,40 @@ export default {
 <style lang="scss" scoped>
 .app-wrapper {
   .el-header {
-  padding: 0 100px;
+    padding: 0 100px;
+    border-bottom: 1px solid #eee;
     img {
       height: 60px;
     }
   }
-  .info-wrapper {
-    img {
-      width: 100%;
-    }
-  }
-  .form-wrapper {
-    .form-title {
-      font-weight: bold;
-    }
-    .el-radio-group {
-      width: 100%;
-    }
-    .form-action {
+  .el-main {
+    .el-row {
       padding-top: 20px;
-      button {
-        width: 100%;
+      padding-left: 80px;
+      .el-col {
+        .info-wrapper {
+          margin-right: 100px;
+          img {
+            height: 485px;
+          }
+        }
+        .form-wrapper {
+          .box-card {
+            max-width: 400px;
+          }
+          .form-title {
+            font-weight: bold;
+          }
+          .el-radio-group {
+            width: 100%;
+          }
+          .form-action {
+            padding-top: 20px;
+            button {
+              width: 100%;
+            }
+          }
+        }
       }
     }
   }
@@ -151,7 +199,11 @@ export default {
     }
     .el-main {
       padding: 0 30px;
+      .el-row {
+        padding-left: 0;
+      }
       .box-card {
+        margin: 0 auto;
         border: none;
         box-shadow: none;
       }
@@ -165,6 +217,16 @@ export default {
       img {
         height: 50px;
         margin-top: 5px;
+      }
+    }
+    .el-main {
+      .el-row {
+        padding-left: 30px;
+        .el-col {
+          .info-wrapper {
+            margin-right: 50px;
+          }
+        }
       }
     }
   }
