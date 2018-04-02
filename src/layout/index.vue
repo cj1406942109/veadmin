@@ -126,6 +126,7 @@ export default {
     line-height: $headerHeight;
     text-align: center;
     position: fixed;
+    z-index: 999;
     color: $headerColor;
     background-color: $headerBg;
   }
@@ -140,7 +141,7 @@ export default {
   .el-main {
     margin-left: $sidebarWidth;
     margin-top: $headerHeight;
-    padding-bottom: 0;
+    padding-bottom: 20px;
     border: 1px solid transparent;
     color: $mainColor;
     background-color: $mainBg;
