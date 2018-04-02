@@ -142,8 +142,8 @@ export default {
     margin-top: $headerHeight;
     padding-bottom: 0;
     border: 1px solid transparent;
-    color: $contentColor;
-    background-color: $contentBg;
+    color: $mainColor;
+    background-color: $mainBg;
   }
   .el-footer {
     margin-left: $sidebarWidth;

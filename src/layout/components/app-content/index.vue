@@ -13,6 +13,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../../../styles/variables.scss';
+.app-content {
+  border: $contentBorder;
+  background-color: $contentBg;
+  color: $contentColor;
+}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity .5s;
