@@ -53,7 +53,6 @@ export default {
     position: fixed;
     display: flex;
     cursor: pointer;
-    // visibility: hidden;
     justify-content: space-around;
     align-items: center;
     border-radius: 50%;

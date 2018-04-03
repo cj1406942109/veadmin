@@ -135,6 +135,7 @@ export default {
     height: 100vh;
     width: $sidebarWidth!important;
     position: fixed;
+    z-index: 99;
     color: $sidebarColor;
     background-color: $sidebarBg;
   }
@@ -150,6 +151,7 @@ export default {
     margin-left: $sidebarWidth;
     height: $footerHeight!important;
     position: relative;
+    z-index: 999;
     padding: 0;
     line-height: $footerHeight;
     color: $footerColor;
