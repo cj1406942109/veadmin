@@ -8,3 +8,8 @@ a {
   text-decoration: none;
   color: $hrefColor;
 }
+
+// 解决sidebar-mini时icon无法隐藏
+.sidebar-mini .el-submenu__icon-arrow {
+  display: none;
+}

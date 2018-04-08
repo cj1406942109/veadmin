@@ -6,6 +6,7 @@
       <!-- sidebar -->
       <el-aside><app-sidebar/></el-aside>
       <el-container style="min-height:100vh">
+        <app-breadcrumb/>
         <!-- content -->
         <el-main><app-content/></el-main>
         <!-- footer -->
@@ -16,7 +17,7 @@
 </template>
 
 <script>
-import { AppHeader, AppSidebar, AppContent, AppFooter } from './components'
+import { AppHeader, AppSidebar, AppContent, AppBreadcrumb, AppFooter } from './components'
 import { getScreenSize } from '@/utils'
 export default {
   name: 'layout',
@@ -24,6 +25,7 @@ export default {
     AppHeader,
     AppSidebar,
     AppContent,
+    AppBreadcrumb,
     AppFooter
   },
   computed: {
@@ -139,9 +141,12 @@ export default {
     color: $sidebarColor;
     background-color: $sidebarBg;
   }
+  .el-breadcrumb {
+    margin-left: $sidebarWidth!important;
+    margin-top: $headerHeight;
+  }
   .el-main {
     margin-left: $sidebarWidth;
-    margin-top: $headerHeight;
     padding-bottom: 20px;
     border: 1px solid transparent;
     color: $mainColor;
@@ -163,7 +168,7 @@ export default {
   .el-aside {
     margin-left: -$sidebarWidth;
   }
-  .el-main, .el-footer {
+  .el-main, .el-footer, .el-breadcrumb {
     margin-left: 0!important;
   }
 }
@@ -172,15 +177,15 @@ export default {
   .el-aside {
     width: $sidebarMiniWidth!important;
   }
-  .el-main, .el-footer {
-    margin-left: $sidebarMiniWidth;
+  .el-main, .el-footer, .el-breadcrumb {
+    margin-left: $sidebarMiniWidth!important;
   }
 }
 .sidebar-hidden.sidebar-mini {
   .el-aside {
     margin-left: -$sidebarMiniWidth;
   }
-  .el-main, .el-footer {
+  .el-main, .el-footer, .el-breadcrumb {
     margin-left: 0!important;
   }
 }
@@ -188,7 +193,8 @@ export default {
 @media (max-width: 767px) {
   .app-wrapper {
     .el-main,
-    .el-footer {
+    .el-footer,
+    .el-breadcrumb {
       margin-left: 0!important;
     }
   }
@@ -197,6 +203,7 @@ export default {
 // Animations
 .el-aside,
 .el-main,
+.el-breadcrumb,
 .el-footer {
   transition: all 0.5s;
 }

@@ -105,8 +105,8 @@ export default {
                 message: '登录成功',
                 type: 'success'
               })
-              // 跳转到dashboard页面
-              this.$router.push({ path: '/' })
+              // 跳转到子系统选择页面页面
+              this.$router.push({ path: '/login/sub-system' })
             } else if (data.code === 401) {
               this.$message({
                 showClose: true,
