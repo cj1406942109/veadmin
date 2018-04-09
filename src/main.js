@@ -10,6 +10,7 @@ import '@/styles/index.scss' // global css
 
 import '@/icons'
 import store from '@/store'
+import '@/mock' // simulation data
 
 // import Element entirely
 import ElementUI from 'element-ui'

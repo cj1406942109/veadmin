@@ -11,6 +11,7 @@ const user = {
       email: '',
       phone: '',
       avatar: '',
+      roles: [],
       userStatus: 0
     },
     token: getToken()
@@ -24,6 +25,7 @@ const user = {
     phone: state => state.user.phone,
     avatar: state => state.user.avatar,
     userStatus: state => state.user.userStatus,
+    roles: state => state.user.roles,
     token: state => state.token
   },
   mutations: {
@@ -50,6 +52,9 @@ const user = {
     },
     SET_AVATAR: (state, avatar) => {
       state.user.avatar = avatar
+    },
+    SET_ROLES: (state, roles) => {
+      state.user.roles = roles
     },
     SET_USER_STATUS: (state, userStatus) => {
       state.user.userStatus = userStatus
@@ -79,6 +84,7 @@ const user = {
           commit('SET_EMAIL', data.email)
           commit('SET_PHONE', data.phone)
           commit('SET_AVATAR', data.avatar)
+          commit('SET_ROLES', data.roles)
           commit('SET_USER_STATUS', data.userStatus)
 
           resolve(response)
@@ -90,6 +96,7 @@ const user = {
     Logout ({ commit }, state) {
       return new Promise((resolve, reject) => {
         commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
         removeToken()
         resolve()
       })

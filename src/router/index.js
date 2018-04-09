@@ -25,7 +25,7 @@ export const constantRouterMap = [
       path: 'dashboard',
       name: 'dashboard',
       component: _import('dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' }
+      meta: { title: '主页', icon: 'dashboard' }
     }]
   }
 ]
@@ -116,7 +116,7 @@ router.beforeEach((to, from, next) => {
       NProgress.done() // if current page is dashboard will not trigger afterEach hook, so manually handle it
     } else {
       // 判断是否需要拉取用户信息
-      if (store.getters.email === '') {
+      if (store.getters.roles.length === 0) {
         store.dispatch('GetUserInfo').then(res => {
           store.dispatch('GenerateRoutes').then(() => {
             router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表

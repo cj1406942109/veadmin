@@ -12,7 +12,7 @@ export function login (userInfo) {
 
 export function getUserInfo (token) {
   return request({
-    url: `/user/getUserInfo`,
+    url: '/user/getUserInfo',
     methods: 'get',
     // `params` are the URL parameters to be sent with the request
     // Must be a plain object or a URLSearchParams object
