@@ -13,3 +13,24 @@ a {
 .sidebar-mini .el-submenu__icon-arrow {
   display: none;
 }
+
+.el-table th>.cell{
+  text-align: center;
+}
+
+.el-input {
+  margin-bottom: 10px;
+}
+.el-form-item__label {
+  font-weight: bold;
+}
+
+@media (max-width: 767px) {
+  .el-message,
+  .el-message-box {
+    // 解决手机端显示宽度超出页面
+    width: calc(100% - 20px)!important;
+    min-width: calc(100% - 20px)!important;
+    max-width: 420px;
+  }
+}

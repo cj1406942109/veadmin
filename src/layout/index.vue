@@ -98,6 +98,8 @@ export default {
   mounted () {
     // 获取窗口尺寸
     this.$store.dispatch('setScreenSize', getScreenSize(document.body.scrollWidth))
+    // 页面初始化时根据页面尺寸跳转sidebar状态
+    this.handleResize()
     window.addEventListener('resize', this.handleResize)
     window.addEventListener('scroll', this.handleScroll)
     let _this = this

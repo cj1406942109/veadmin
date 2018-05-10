@@ -33,10 +33,10 @@ export const constantRouterMap = [
 // 根据权限不同动态生成的路由
 export const asyncRouterMap = [
   {
-    path: '/emrs',
+    path: '/mr',
     component: Layout,
-    redirect: '/emrs/index',
-    name: 'emrs',
+    redirect: '/mr/index',
+    name: 'mr',
     meta: {
       title: '电子病历',
       icon: 'medical-record'
@@ -44,6 +44,7 @@ export const asyncRouterMap = [
     children: [{
       path: 'index',
       name: 'list',
+      component: _import('mr/index'),
       meta: {
         title: '病历列表',
         icon: 'list'
@@ -51,6 +52,7 @@ export const asyncRouterMap = [
     }, {
       path: 'add',
       name: 'edit',
+      component: _import('mr/edit'),
       meta: {
         title: '添加病历',
         icon: 'add'
