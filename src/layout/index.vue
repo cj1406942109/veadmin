@@ -40,6 +40,14 @@ export default {
     }
   },
   methods: {
+    initSidebar () {
+      console.log(this.screen)
+      if (this.screen.size.id > 1) {
+        this.$store.dispatch('sidebarOpen')
+      } else {
+        this.$store.dispatch('sidebarClose')
+      }
+    },
     handleResize () {
       if (this.screen.size.desc !== getScreenSize(document.body.scrollWidth).desc) {
         this.$store.dispatch('setScreenSize', getScreenSize(document.body.scrollWidth))
@@ -99,7 +107,7 @@ export default {
     // 获取窗口尺寸
     this.$store.dispatch('setScreenSize', getScreenSize(document.body.scrollWidth))
     // 页面初始化时根据页面尺寸跳转sidebar状态
-    this.handleResize()
+    this.initSidebar()
     window.addEventListener('resize', this.handleResize)
     window.addEventListener('scroll', this.handleScroll)
     let _this = this

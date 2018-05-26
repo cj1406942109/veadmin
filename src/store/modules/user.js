@@ -1,5 +1,6 @@
 import { login, getUserInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { removeAppStatus } from '@/utils/appStatus'
 
 const user = {
   state: {
@@ -98,6 +99,7 @@ const user = {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
         removeToken()
+        removeAppStatus()
         resolve()
       })
     }
