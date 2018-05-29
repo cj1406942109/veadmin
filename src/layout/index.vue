@@ -122,7 +122,9 @@ export default {
   },
   beforeDestroy () {
     // 解除事件绑定
+
     // window.removeEventListener()
+
     // window.onscroll = ''
   }
 }

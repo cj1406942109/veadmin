@@ -23,7 +23,7 @@ const mr = {
     }
   },
   actions: {
-    GetDoctorList ({commit, state}) {
+    GetDoctorList ({ commit, state }) {
       return new Promise((resolve, reject) => {
         getDoctorList().then(response => {
           const data = response.data
@@ -34,7 +34,7 @@ const mr = {
         })
       })
     },
-    GetStaticIndex ({commit, state}) {
+    GetStaticIndex ({ commit, state }) {
       return new Promise((resolve, reject) => {
         getStaticIndex().then(response => {
           const data = response.data
@@ -45,7 +45,7 @@ const mr = {
         })
       })
     },
-    GetEmptyMr ({commit, state}) {
+    GetEmptyMr ({ commit, state }) {
       return new Promise((resolve, reject) => {
         getMr().then(response => {
           const data = response.data

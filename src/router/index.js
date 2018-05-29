@@ -5,7 +5,8 @@ import 'nprogress/nprogress.css'
 import Layout from '@/layout'
 
 import store from '@/store'
-import { getToken } from '@/utils/auth' // getToken from cookie
+// getToken from cookie
+import { getToken } from '@/utils/auth'
 import { Message } from 'element-ui'
 
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
@@ -100,13 +101,13 @@ export const asyncRouterMap = [
   }
 ]
 
-const router = new Router({
-  routes: constantRouterMap
-})
+const router = new Router({ routes: constantRouterMap })
 
 // 拦截器权限控制
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((
+  to, from, next
+) => {
   // start progress bar
   NProgress.start()
 
@@ -115,14 +116,17 @@ router.beforeEach((to, from, next) => {
     // 如果有token
     if (to.path === '/login') {
       next({ path: '/login/sub-system' })
-      NProgress.done() // if current page is dashboard will not trigger afterEach hook, so manually handle it
+      // if current page is dashboard will not trigger afterEach hook, so manually handle it
+      NProgress.done()
     } else {
       // 判断是否需要拉取用户信息
       if (store.getters.roles.length === 0) {
         store.dispatch('GetUserInfo').then(res => {
           store.dispatch('GenerateRoutes').then(() => {
-            router.addRoutes(store.getters.addRouters) // 动态添加可访问路由表
-            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+            // 动态添加可访问路由表
+            router.addRoutes(store.getters.addRouters)
+            // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
+            next({ ...to, replace: true })
           })
         }).catch(() => {
           store.dispatch('Logout').then(() => {
@@ -142,7 +146,8 @@ router.beforeEach((to, from, next) => {
     } else {
       // 否则，重定向到登录页面
       next('/login')
-      NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
+      // if current page is login will not trigger afterEach hook, so manually handle it
+      NProgress.done()
     }
   }
 })

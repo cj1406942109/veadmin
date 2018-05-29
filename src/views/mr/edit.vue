@@ -2219,6 +2219,7 @@ export default {
       // 现病史包含的疾病名，用于页面遍历，第一个为空，与staticIndex对应，从1开始
       historyOfPresentIllness: ['', 'chestPain', 'chestDistress', 'dyspnea', 'palpitation', 'abnormalEcg']
       // 家族史列表，修改数据库字段
+
       // familyHistoryIllness: []
     }
   },
@@ -2238,9 +2239,7 @@ export default {
     }
   },
   methods: {
-
-    // repeate输入框
-    // 添加方法
+    // repeate输入框添加方法
     addRow (array, row) {
       array.push(row)
     },
@@ -2272,7 +2271,7 @@ export default {
           type: 'success',
           message: '保存成功!'
         })
-        this.$router.push({path: '/mr'})
+        this.$router.push({ path: '/mr' })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -2281,8 +2280,10 @@ export default {
       })
     },
     goAnchor (selector) {
-      // offsetTop 是当前元素距离offsetParent的距离
-      // offsetParent是距离当前元素最近的一个设置了postion属性的元素
+      /**
+       * offsetTop 是当前元素距离offsetParent的距离
+       * offsetParent是距离当前元素最近的一个设置了postion属性的元素
+       */
       console.log(this.$el.querySelector('.el-form').offsetTop)
       console.log(this.$el.querySelector('.el-form').offsetParent)
       let fixedHeight = this.$el.querySelector('.el-form').offsetTop - 50

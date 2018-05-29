@@ -10,19 +10,18 @@ import {
 const app = {
   state: {
     sidebar: {
-      // +"1" => 1
-      // +"0" => 0
-      // "0" => false
-      // "1" => false
+
+      /*
+       * +"1" => 1
+       * +"0" => 0
+       * "0" => false
+       * "1" => false
+       */
       opened: getSidebarOpenStatus(),
       minimized: getSidebarMinStatus()
     },
-    backTop: {
-      hidden: true
-    },
-    screen: {
-      size: getScreenSize()
-    }
+    backTop: { hidden: true },
+    screen: { size: getScreenSize() }
   },
   getters: {
     sidebar: state => state.sidebar,

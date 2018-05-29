@@ -70,8 +70,8 @@ export default {
         userType: ''
       },
       userTypeList: [
-        {index: 1, label: '医疗专家诊断', desc: '医疗专家版本'},
-        {index: 2, label: '大众健康评测', desc: '大众用户版本'}
+        { index: 1, label: '医疗专家诊断', desc: '医疗专家版本' },
+        { index: 2, label: '大众健康评测', desc: '大众用户版本' }
       ],
       formStatus: {
         loading: false

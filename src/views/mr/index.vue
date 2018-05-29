@@ -63,7 +63,7 @@ export default {
       })
     },
     goAdd () {
-      this.$router.push({path: '/mr/add'})
+      this.$router.push({ path: '/mr/add' })
     },
     filterGender (value, row, column) {
       const property = column['property']
