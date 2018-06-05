@@ -44,7 +44,7 @@ export const asyncRouterMap = [
     },
     children: [{
       path: 'index',
-      name: 'list',
+      name: 'mr-list',
       component: _import('mr/index'),
       meta: {
         title: '病历列表',
@@ -52,11 +52,38 @@ export const asyncRouterMap = [
       }
     }, {
       path: 'add',
-      name: 'edit',
+      name: 'mr-edit',
       component: _import('mr/edit'),
       meta: {
         title: '添加病历',
         icon: 'add'
+      }
+    }]
+  },
+  {
+    path: '/inquiry',
+    component: Layout,
+    redirect: '/inquiry/index',
+    name: 'inquiry',
+    meta: {
+      title: '智能问诊',
+      icon: 'inquiry'
+    },
+    children: [{
+      path: 'index',
+      name: 'inquiry-form',
+      component: _import('inquiry/index'),
+      meta: {
+        title: '新建流程',
+        icon: 'inquiry-table'
+      }
+    }, {
+      path: 'history',
+      name: 'inquiry-history',
+      component: _import('inquiry/list'),
+      meta: {
+        title: '历史流程',
+        icon: 'list-history'
       }
     }]
   },

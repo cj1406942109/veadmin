@@ -1,7 +1,6 @@
 <template>
   <div class="content-wrapper">
-    <el-alert :title="prompt" type="warning" close-text="知道了" style="margin-bottom: 20px;">
-  </el-alert>
+    <el-alert :title="prompt" type="warning" close-text="知道了" style="margin-bottom: 20px;"></el-alert>
     <el-form ref="mrForm" :model="mr" :rules="rules" label-width="200px" :label-position="position" v-loading.body="mrLoading" v-if="mr">
       <el-tabs :tab-position="position" type="border-card">
         <el-tab-pane label="患者基本信息">
@@ -2202,6 +2201,8 @@ export default {
       },
 
       // 患者基本信息校验规则
+
+      // TODO:添加更详细的规则验证
       rules: {
         // 包含二级属性的值，需要加引号才能生效
         'basicInfo.name': [{ required: true, message: '患者姓名不能为空', trigger: 'blur' }],

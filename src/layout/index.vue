@@ -41,7 +41,6 @@ export default {
   },
   methods: {
     initSidebar () {
-      console.log(this.screen)
       if (this.screen.size.id > 1) {
         this.$store.dispatch('sidebarOpen')
       } else {
