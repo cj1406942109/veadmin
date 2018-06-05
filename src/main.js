@@ -1,15 +1,22 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+/*
+ * The Vue build version to load with the `import` command
+ * (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+ */
 import Vue from 'vue'
 import App from './App'
 import router from './router'
 
-import 'normalize.css/normalize.css' // A modern alternative to CSS resets
+// A modern alternative to CSS resets
+import 'normalize.css/normalize.css'
 
-import '@/styles/index.scss' // global css
+// global css
+import '@/styles/index.scss'
 
 import '@/icons'
 import store from '@/store'
+
+// simulation data
+import '@/mock'
 
 // import Element entirely
 import ElementUI from 'element-ui'

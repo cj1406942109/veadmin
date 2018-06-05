@@ -13,12 +13,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity .5s;
+@import '../../../styles/variables.scss';
+.app-content {
+  border: $contentBorder;
+  background-color: $contentBg;
+  color: $contentColor;
 }
-.fade-enter,
-.fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
+// 动画效果加上后页面跳转看起来很突兀
+// .fade-enter-active,
+// .fade-leave-active {
+//   transition: opacity .5s;
+// }
+// .fade-enter,
+// .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+//   opacity: 0;
+// }
 </style>
