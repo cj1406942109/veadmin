@@ -8,8 +8,8 @@
       <div class="nav-avatar">
         <el-dropdown trigger="click">
           <span class="el-dropdown-link">
-            <img :src="avatar">
-            <span class="hidden-sm-and-down">{{nickname}}</span>
+            <img src="./default-avatar.png">
+            <span class="hidden-sm-and-down">{{name}}</span>
             <i class="el-icon-arrow-down el-icon--right hidden-sm-and-down"></i>
           </span>
            <el-dropdown-menu slot="dropdown">
@@ -28,8 +28,7 @@ export default {
   name: 'app-header',
   computed: {
     ...mapGetters([
-      'nickname',
-      'avatar'
+      'name'
     ])
   },
   methods: {

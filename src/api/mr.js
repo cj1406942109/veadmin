@@ -1,24 +1,30 @@
 import request from '@/utils/request'
 
-export function getMrList () {
+export function getMrList (pageNum, pageSize) {
   return request({
-    url: '/mr/getMrList',
-    method: 'get'
+    url: '/record/getPartOfAllRecords',
+    method: 'get',
+    params: {
+      sort: '',
+      page: pageNum,
+      per_page: pageSize
+    }
   })
 }
 
 export function getMr (recordId) {
   return request({
-    baseURL: 'http://116.62.148.24:8008',
+    // baseURL: 'http://116.62.148.24:8008',
     url: '/record/getRecord',
     method: 'post',
-    data: recordId
+    data: {
+      recordId
+    }
   })
 }
 
 export function getDoctorList () {
   return request({
-    baseURL: 'http://116.62.148.24:3000',
     url: '/user/getAllDoctorIdAndName',
     method: 'post'
   })
@@ -26,7 +32,7 @@ export function getDoctorList () {
 
 export function getStaticIndex () {
   return request({
-    baseURL: 'http://116.62.148.24:3000',
+    // baseURL: 'http://116.62.148.24:3000',
     url: '/index/getIndex',
     method: 'post'
   })

@@ -30,7 +30,7 @@
                   </el-form-item>
                   <el-form-item label="用户类型" prop="userType">
                     <el-radio-group v-model="loginForm.userType">
-                      <el-radio v-for="userType in userTypeList" :key="userType.id" :label="userType">{{userType.label}}</el-radio>
+                      <el-radio v-for="item in userTypeList" :key="item.id" :label="item.index">{{item.label}}</el-radio>
                     </el-radio-group>
                   </el-form-item>
                   <el-form-item class="form-action">
@@ -67,7 +67,7 @@ export default {
       loginForm: {
         username: '',
         password: '',
-        userType: ''
+        userType: 1
       },
       userTypeList: [
         { index: 1, label: '医疗专家诊断', desc: '医疗专家版本' },
@@ -98,9 +98,8 @@ export default {
           this.formStatus.loading = true
           this.$store.dispatch('Login', this.loginForm).then((response) => {
             this.formStatus.loading = false
-            console.log(response)
             const data = response.data
-            if (data.code === 200) {
+            if (data.status) {
               this.$message({
                 showClose: true,
                 message: '登录成功',
@@ -108,22 +107,10 @@ export default {
               })
               // 跳转到子系统选择页面页面
               this.$router.push({ path: '/login/sub-system' })
-            } else if (data.code === 401) {
-              this.$message({
-                showClose: true,
-                message: '用户不存在',
-                type: 'error'
-              })
-            } else if (data.code === 402) {
-              this.$message({
-                showClose: true,
-                message: '用户名或密码错误',
-                type: 'error'
-              })
             } else {
               this.$message({
                 showClose: true,
-                message: '登录出错，请稍候再试',
+                message: data.message === '' ? '登录出错，请稍候再试' : data.message,
                 type: 'error'
               })
             }

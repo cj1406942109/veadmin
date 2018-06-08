@@ -1,8 +1,8 @@
 <template>
   <div class="app-sidebar">
     <el-menu class="sideabr-el-menu" mode="vertical" :router="true" :default-active="$route.path" :collapse="!!sidebar.minimized" background-color="#364150" text-color="#b4bcc8" active-text-color="#36c6d3">
-      <!-- <sidebar-item :routes="permissionRouters"></sidebar-item> -->
-      <template v-for="item in permissionRouters" v-if="!item.hidden&&item.children">
+      <!-- <sidebar-item :routes="routerMap"></sidebar-item> -->
+      <template v-for="item in routerMap" v-if="!item.hidden&&item.children">
         <!-- 显示一级路由 -->
         <el-menu-item :index="item.path+'/'+item.children[0].path" :key="item.name" v-if="item.children.length===1 && !item.children[0].children">
           <svg-icon v-if="item.children[0].meta&&item.children[0].meta.icon" :icon-class="item.children[0].meta.icon"></svg-icon>
@@ -33,7 +33,7 @@ import { mapGetters } from 'vuex'
 export default {
   computed: {
     ...mapGetters([
-      'permissionRouters',
+      'routerMap',
       'sidebar'
     ])
   },
@@ -41,6 +41,9 @@ export default {
     sidebarToggleMin () {
       this.$store.dispatch('sidebarToggleMin')
     }
+  },
+  mounted () {
+    this.$store.dispatch('setRouters')
   }
 }
 </script>

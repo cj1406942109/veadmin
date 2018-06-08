@@ -8,24 +8,40 @@
         <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column prop="name" label="姓名" width="100" sortable></el-table-column>
         <el-table-column prop="gender" label="性别" width="100" sortable
-        :filters="[{text:'男', value: '1'}, {text: '女', value: '0'}]"
+        :filters="[{text:'男', value: '男'}, {text: '女', value: '女'}]"
         :filter-method="filterGender">
           <template slot-scope="scope">
             <el-tag
-              :type="scope.row.gender === '1' ? '' : 'danger'"
-              close-transition>{{scope.row.gender === '1' ? '男' : '女'}}</el-tag>
+              :type="scope.row.gender === '男' ? '' : 'danger'"
+              close-transition>{{scope.row.gender}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="contactInfo" label="联系方式"></el-table-column>
-        <el-table-column prop="IdCardNo" label="身份证号"></el-table-column>
-        <el-table-column prop="medicalCardNo" label="医保卡号" sortable></el-table-column>
-        <el-table-column prop="admissionNo" label="住院号" sortable></el-table-column>
-        <el-table-column prop="bedNo" label="床位号" sortable></el-table-column>
-        <el-table-column prop="doctor" label="主治医生" width="150" sortable></el-table-column>
+        <el-table-column prop="age" label="年龄" width="100" sortable></el-table-column>
+        <el-table-column label="联系方式">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>手机号1: {{ scope.row.cellphone1 }}</p>
+              <p>手机号2: {{ scope.row.cellphone2 }}</p>
+              <p>电话: {{ scope.row.telephone }}</p>
+              <div slot="reference" class="name-wrapper">
+                <el-tag size="medium" type="info">{{ scope.row.cellphone1 === '' ? '更多' : scope.row.cellphone1 }}</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="idNum" label="身份证号"></el-table-column>
+        <el-table-column prop="medicalCardNum" label="医保卡号" sortable></el-table-column>
+        <el-table-column prop="admissionNum" label="住院号" sortable></el-table-column>
+        <el-table-column prop="bedNum" label="床位号" sortable></el-table-column>
+        <el-table-column label="主治医生" width="150" sortable>
+          <template slot-scope="scope">
+            {{scope.row.doctor.name}}
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
-            <el-button type="success" icon="el-icon-info" size="mini">详情</el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="goEdit(scope.row._id)">编辑</el-button>
+            <!-- <el-button type="success" icon="el-icon-info" size="mini">详情</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -33,11 +49,11 @@
       background
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="1"
-      :page-sizes="[20, 50, 100, 200, 500]"
-      :page-size="50"
+      :current-page="pagination.pageNum"
+      :page-sizes="[5, 10, 20, 50, 100]"
+      :page-size="pagination.pageSize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
+      :total="pagination.pageTotal">
     </el-pagination>
     </div>
   </div>
@@ -49,31 +65,52 @@ export default {
   data () {
     return {
       mrList: null,
-      mrListLoading: true
+      mrListLoading: true,
+      pagination: {
+        pageSize: 5,
+        pageTotal: 0,
+        pageNum: 1
+      }
     }
   },
-  created () {
+  mounted () {
     this.getMrList()
   },
   methods: {
     getMrList () {
-      getMrList().then(response => {
-        this.mrList = response.data
+      getMrList(this.pagination.pageNum, this.pagination.pageSize).then(response => {
         this.mrListLoading = false
+        console.log(response)
+        if (response.data.data) {
+          this.mrList = response.data.data
+          this.pagination.pageTotal = response.data.total
+        } else {
+          this.$message({
+            type: 'error',
+            message: '病历数据加载失败，请重试'
+          })
+        }
       })
     },
     goAdd () {
       this.$router.push({ path: '/mr/add' })
+    },
+    goEdit (id) {
+      this.$router.push({ path: `/mr/edit/${id}` })
     },
     filterGender (value, row, column) {
       const property = column['property']
       return row[property] === value
     },
     handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+      this.pagination.pageSize = val
+      this.getMrList()
+      // console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.pagination.pageNum = val
+      this.getMrList()
+      // console.log(`当前页: ${val}`)
     }
   }
 }

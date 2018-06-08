@@ -4,17 +4,13 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import Layout from '@/layout'
 
-import store from '@/store'
-// getToken from cookie
-import { getToken } from '@/utils/auth'
-import { Message } from 'element-ui'
+import { getUserId } from '@/utils/auth'
 
 // detail: https://panjiachen.github.io/vue-element-admin-site/#/lazy-loading
 const _import = require('./_import_' + process.env.NODE_ENV)
 
 Vue.use(Router)
 
-// 固定路由
 export const constantRouterMap = [
   { path: '/login', component: _import('login/index') },
   { path: '/login/sub-system', component: _import('login/subSystem') },
@@ -28,11 +24,7 @@ export const constantRouterMap = [
       component: _import('dashboard/index'),
       meta: { title: '主页', icon: 'dashboard' }
     }]
-  }
-]
-
-// 根据权限不同动态生成的路由
-export const asyncRouterMap = [
+  },
   {
     path: '/mr',
     component: Layout,
@@ -52,118 +44,43 @@ export const asyncRouterMap = [
       }
     }, {
       path: 'add',
-      name: 'mr-edit',
+      name: 'mr-add',
       component: _import('mr/edit'),
       meta: {
         title: '添加病历',
         icon: 'add'
       }
-    }]
-  },
-  {
-    path: '/inquiry',
-    component: Layout,
-    redirect: '/inquiry/index',
-    name: 'inquiry',
-    meta: {
-      title: '智能问诊',
-      icon: 'inquiry'
-    },
-    children: [{
-      path: 'index',
-      name: 'inquiry-form',
-      component: _import('inquiry/index'),
-      meta: {
-        title: '新建流程',
-        icon: 'inquiry-table'
-      }
     }, {
-      path: 'history',
-      name: 'inquiry-history',
-      component: _import('inquiry/list'),
+      path: 'edit/:id',
+      name: 'mr-edit',
+      component: _import('mr/edit'),
+      hidden: true,
       meta: {
-        title: '历史流程',
-        icon: 'list-history'
-      }
-    }]
-  },
-  {
-    path: '/bd-query',
-    component: Layout,
-    redirect: '/bd-query/index',
-    children: [{
-      path: 'index',
-      name: 'bd-query',
-      meta: {
-        title: '大数据查询',
-        icon: 'query'
-      }
-    }]
-  },
-  {
-    path: '/health-edu',
-    component: Layout,
-    redirect: '/health-edu/index',
-    children: [{
-      path: 'index',
-      name: 'health-edu',
-      meta: {
-        title: '健康教育',
-        icon: 'education'
-      }
-    }]
-  },
-  {
-    path: '/interactive-sys',
-    component: Layout,
-    redirect: '/interactive-sys/index',
-    children: [{
-      path: 'index',
-      name: 'interactive-sys',
-      meta: {
-        title: '交互系统',
-        icon: 'interactive'
+        title: '编辑病历'
       }
     }]
   }
 ]
 
-const router = new Router({ routes: constantRouterMap })
+const router = new Router({
+  routes: constantRouterMap
+})
 
 // 拦截器权限控制
-
 router.beforeEach((
   to, from, next
 ) => {
   // start progress bar
   NProgress.start()
 
-  // 判断cookie中是否有token
-  if (getToken()) {
-    // 如果有token
+  // 判断cookie中是否有用户id
+  if (getUserId()) {
     if (to.path === '/login') {
-      next({ path: '/login/sub-system' })
+      next('/login/sub-system')
       // if current page is dashboard will not trigger afterEach hook, so manually handle it
       NProgress.done()
     } else {
-      // 判断是否需要拉取用户信息
-      if (store.getters.roles.length === 0) {
-        store.dispatch('GetUserInfo').then(res => {
-          store.dispatch('GenerateRoutes').then(() => {
-            // 动态添加可访问路由表
-            router.addRoutes(store.getters.addRouters)
-            // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-            next({ ...to, replace: true })
-          })
-        }).catch(() => {
-          store.dispatch('Logout').then(() => {
-            Message.error('身份信息验证失败，请重新登录')
-            next('/login')
-          })
-        })
-      } else {
-        next()
-      }
+      next()
     }
   } else {
     // 没有token

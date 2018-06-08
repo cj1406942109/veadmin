@@ -16,7 +16,7 @@ import '@/icons'
 import store from '@/store'
 
 // simulation data
-import '@/mock'
+// import '@/mock'
 
 // import Element entirely
 import ElementUI from 'element-ui'

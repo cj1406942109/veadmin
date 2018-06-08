@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper">
-    <el-alert :title="prompt" type="warning" close-text="知道了" style="margin-bottom: 20px;"></el-alert>
+    <!-- <el-alert :title="prompt" type="warning" close-text="知道了" style="margin-bottom: 20px;"></el-alert> -->
     <el-form ref="mrForm" :model="mr" :rules="rules" label-width="200px" :label-position="position" v-loading.body="mrLoading" v-if="mr">
       <el-tabs :tab-position="position" type="border-card">
         <el-tab-pane label="患者基本信息">
@@ -42,6 +42,21 @@
           </el-form-item>
           <el-form-item label="记录者" prop="basicInfo.recorder">
             <el-input clearable v-model="mr.basicInfo.recorder"></el-input>
+          </el-form-item>
+          <el-form-item label="住院时间" v-if="screen.size.id>=2">
+            <el-date-picker v-model="mr.basicInfo.hospitalizationTime" type="datetimerange" range-separator="至" start-placeholder="住院开始日期" end-placeholder="住院结束日期">
+          </el-date-picker>
+          </el-form-item>
+          <template v-else>
+            <el-form-item label="住院开始时间">
+              <el-date-picker v-model="mr.basicInfo.hospitalizationTime[0]" type="datetime" placeholder="选择入院时间"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="住院结束时间">
+              <el-date-picker v-model="mr.basicInfo.hospitalizationTime[1]" type="datetime" placeholder="选择出院时间"></el-date-picker>
+            </el-form-item>
+          </template>
+          <el-form-item label="出院状态">
+            <el-radio-group v-model="mr.basicInfo.dischargeStatus"><el-radio label="死亡">死亡</el-radio><el-radio label="存活">存活</el-radio></el-radio-group>
           </el-form-item>
           <el-form-item label="职业">
             <el-select v-model="mr.basicInfo.profession" placeholder="请选择职业">
@@ -88,6 +103,11 @@
           v-if="mr.historyOfPresentIllness.careCauses.indexOf(disease.id)>=0&&disease.id!=='6'" :id="'anchor-'+historyOfPresentIllness[disease.id]">
             <div slot="header"><span>{{disease.text}}</span></div>
             <div>
+              <el-form-item label="发病缓急" v-if="disease.id==='1'">
+                <el-radio-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].urgencyDegree">
+                  <el-radio v-for="item in staticIndex.urgencyDegreeList" :key="item.id" :label="item.id">{{item.text}}</el-radio>
+                </el-radio-group>
+              </el-form-item>
               <el-form-item label="发作频率">
                 <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].timesPerDay" placeholder="次/天"></el-input>
                 <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].timesPerWeek" placeholder="次/周"></el-input>
@@ -102,11 +122,42 @@
                 v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].onsetTime.indexOf('5')>=0"
                 placeholder="填写其他发病时间"></el-input>
               </el-form-item>
+              <template v-if="disease.id=='3'">
+                <el-form-item label="原因不明">
+                  <el-radio-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].unknownOrigin">
+                    <el-radio label="1">是</el-radio>
+                    <el-radio label="0">否</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="突发">
+                  <el-radio-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].isSudden">
+                    <el-radio label="1">是</el-radio>
+                    <el-radio label="0">否</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="程度">
+                  <el-radio-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].degree">
+                    <el-radio v-for="item in staticIndex.dyspneaDegree" :key="item.id" :label="item.id">{{item.text}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="端坐呼吸">
+                  <el-radio-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].orthopnoea">
+                    <el-radio label="1">是</el-radio>
+                    <el-radio label="0">否</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="呼吸会加重胸痛">
+                  <el-radio-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].breathAggravateChestPain">
+                    <el-radio label="1">是</el-radio>
+                    <el-radio label="0">否</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+              </template>
               <template v-if="disease.id<3">
                 <el-form-item label="部位">
                   <el-button icon="el-icon-plus" size="mini" type="primary"
                   @click.prevent="addRow(mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].diseaseBodyParts,
-                  {bodyPartName: '',bodyPartNameOthers: '',qualityOfPain: '',qualityOfPainOthers: '', durationOfPain: '', durationOfPainOthers:'', painDegree:''})">
+                  {bodyPartName: '', bodyPartRange: '', bodyPartNameOthers: '',qualityOfPain: '',qualityOfPainOthers: '', durationOfPain: '', durationOfPainOthers:'', painDegree:''})">
                   添加</el-button>
                 </el-form-item>
                 <el-form-item
@@ -115,6 +166,9 @@
                   :key="bodyPart.id">
                   <el-select v-model="bodyPart.bodyPartName" placeholder="请选择部位">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseBodyPartNames" :key="item.id"></el-option>
+                  </el-select>
+                  <el-select v-model="bodyPart.bodyPartRange" placeholder="请选择范围" v-if="disease.id==='1'">
+                    <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseBodyPartRanges" :key="item.id"></el-option>
                   </el-select>
                   <el-input clearable v-model="bodyPart.bodyPartNameOthers" v-if="bodyPart.bodyPartName==='11'" placeholder="其他部位"></el-input>
                   <el-select v-model="bodyPart.qualityOfPain" placeholder="请选择性质">
@@ -149,7 +203,7 @@
                     <el-checkbox v-for="item in staticIndex.precipitatingFactors" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
                   <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactorsOthers"
-                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactors.indexOf('12')>=0"
+                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactors.indexOf('13')>=0"
                   placeholder="填写其他诱因"></el-input>
                 </el-form-item>
                 <el-form-item label="放射部位（多选）">
@@ -157,7 +211,7 @@
                     <el-checkbox v-for="item in staticIndex.radiationSites" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
                   <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].radiationSitesOthers"
-                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].radiationSites.indexOf('7')>=0"
+                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].radiationSites.indexOf('10')>=0"
                   placeholder="填写其他放射部位"></el-input>
                 </el-form-item>
                 <el-form-item label="伴随症状（多选）">
@@ -165,7 +219,7 @@
                     <el-checkbox v-for="item in staticIndex.simultaneousPhenomena" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
                   <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].simultaneousPhenomenonOthers"
-                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].simultaneousPhenomena.indexOf('21')>=0"
+                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].simultaneousPhenomena.indexOf('24')>=0"
                   placeholder="填写其他伴随症状"></el-input>
                 </el-form-item>
               </template>
@@ -313,7 +367,7 @@
                 <el-input clearable v-model="mr.anamnesis.goutDuration" placeholder="填写病史（年）" v-if="mr.anamnesis.isGout==='1'"></el-input>
               </el-form-item>
               <el-form-item label="血清尿酸">
-                <el-input clearable v-model="mr.anamnesis.serumUricAcidLevel" placeholder="mmol/L"></el-input>
+                <el-input clearable v-model="mr.anamnesis.serumUricAcidLevel" placeholder="μmol/L"></el-input>
               </el-form-item>
               <el-form-item label="有无肾功能不全">
                 <el-radio-group v-model="mr.anamnesis.isRenalInsufficiency">
@@ -327,10 +381,10 @@
                 </template>
               </el-form-item>
               <el-form-item label="最高Cr">
-                <el-input clearable v-model="mr.anamnesis.maximumCr" placeholder="mmol/L"></el-input>
+                <el-input clearable v-model="mr.anamnesis.maximumCr" placeholder="μmol/L"></el-input>
               </el-form-item>
               <el-form-item label="近期Cr">
-                <el-input clearable v-model="mr.anamnesis.recentCr" placeholder="mmol/L"></el-input>
+                <el-input clearable v-model="mr.anamnesis.recentCr" placeholder="μmol/L"></el-input>
               </el-form-item>
             </div>
           </el-card>
@@ -741,7 +795,7 @@
                 <el-input clearable v-model="mr.riskFactors.weight" placeholder="kg"></el-input>
               </el-form-item>
               <el-form-item label="BMI">
-                <el-input clearable disabled v-model="mr.riskFactors.BMI" placeholder="kg/m²"></el-input>
+                <el-input clearable readonly v-model="mr.riskFactors.BMI" placeholder="kg/m²"></el-input>
                 <span>（ BMI：体重/身高<sup>2</sup>，kg/m<sup>2</sup>）</span>
               </el-form-item>
               <el-form-item label="腰围">
@@ -753,6 +807,9 @@
               </el-form-item>
               <el-form-item label="臀围">
                 <el-input clearable v-model="mr.riskFactors.hipline" placeholder="cm"></el-input>
+              </el-form-item>
+              <el-form-item label="踝围">
+                <el-input clearable v-model="mr.riskFactors.ankleGirth" placeholder="cm"></el-input>
               </el-form-item>
             </div>
           </el-card>
@@ -767,6 +824,7 @@
             <el-tag type="info" @click.native="goAnchor('#anchor-sudden-death')">猝死</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-chemic-stroke')">缺血性脑卒中</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-hemorrhagic-stroke')">出血性脑卒中</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-marfan-syndrome')">马凡综合征</el-tag>
           </div>
           <h3>家族史</h3>
           <el-card id="anchor-premature-chd">
@@ -936,6 +994,38 @@
               </el-form-item>
             </div>
           </el-card>
+          <el-card id="anchor-marfan-syndrome">
+            <div slot="header"><span>马凡综合征</span></div>
+            <div>
+              <el-form-item label="有无马凡综合征家族史">
+                <el-radio-group v-model="mr.familyHistory.marfanSyndrome.isMarfanSyndrome">
+                  <el-radio label="0">无</el-radio>
+                  <el-radio label="1">有</el-radio>
+                </el-radio-group>
+                <template v-if="mr.familyHistory.marfanSyndrome.isMarfanSyndrome==='1'">
+                  <el-form-item label="发病成员">
+                    <el-button icon="el-icon-plus" size="mini" type="primary"
+                    @click.prevent="addRow(mr.familyHistory.marfanSyndrome.onsetMembers,
+                    {onsetMember: '',gender: '',onsetAge:''})">
+                    添加</el-button>
+                  </el-form-item>
+                  <el-form-item
+                    v-for="(member, index) in mr.familyHistory.marfanSyndrome.onsetMembers"
+                    :label="'发病成员' + (index + 1)"
+                    :key="member.id">
+                    <el-select v-model="member.onsetMember" placeholder="请选择发病成员">
+                      <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.familyMembers" :key="item.id"></el-option>
+                    </el-select>
+                    <el-select v-model="member.gender" placeholder="请选择性别">
+                      <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.genderList" :key="item.id"></el-option>
+                    </el-select>
+                    <el-input clearable v-model="member.onsetAge" placeholder="填写发病年龄"></el-input>
+                    <el-button @click.prevent="removeRow(mr.familyHistory.marfanSyndrome.onsetMembers, index)" type="danger" icon="el-icon-delete"></el-button>
+                  </el-form-item>
+                </template>
+              </el-form-item>
+            </div>
+          </el-card>
         </el-tab-pane>
         <el-tab-pane label="体格检查">
           <div class="quick-anchor">
@@ -999,6 +1089,17 @@
                 <el-radio label="1">有</el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item label="P2明显亢进">
+              <el-radio-group v-model="mr.physicalExamination.p2Hyperactivity">
+                <el-radio label="0">无</el-radio>
+                <el-radio label="1">有</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="心脏杂音">
+              <el-checkbox-group v-model="mr.physicalExamination.cardiacSouffle">
+                <el-checkbox v-for="item in staticIndex.cardiacSouffleList" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
           </el-form-item>
           <el-form-item label="脉搏">
             <el-input clearable v-model="mr.physicalExamination.pulse" placeholder="次/分"></el-input>
@@ -1007,6 +1108,24 @@
             <el-input clearable v-model="mr.physicalExamination.BP.SBP" placeholder="收缩压/高压（mmHg）"></el-input>
             &nbsp;/&nbsp;
             <el-input clearable v-model="mr.physicalExamination.BP.DBP" placeholder="舒张压/低压（mmHg）"></el-input>
+          </el-form-item>
+          <el-form-item label="肢体血压不对称">
+            <el-radio-group v-model="mr.physicalExamination.isLimbBPAsymmetry">
+              <el-radio label="0">无</el-radio>
+              <el-radio label="1">有</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="蜘蛛指">
+            <el-radio-group v-model="mr.physicalExamination.isArachnodactylySyndrome">
+              <el-radio label="0">无</el-radio>
+              <el-radio label="1">有</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="眼部异常">
+            <el-radio-group v-model="mr.physicalExamination.isOcularAbnormal">
+              <el-radio label="0">无</el-radio>
+              <el-radio label="1">有</el-radio>
+            </el-radio-group>
           </el-form-item>
           <el-form-item label="耳垂有纵向裂纹">
             <el-radio-group v-model="mr.physicalExamination.isEarLobeLongitudinalCrack">
@@ -1041,6 +1160,12 @@
               </el-checkbox-group>
             </el-form-item>
           </el-form-item>
+          <el-form-item label="颈静脉怒张">
+            <el-radio-group v-model="mr.physicalExamination.isDistentionOfJugularVein">
+              <el-radio label="0">无</el-radio>
+              <el-radio label="1">有</el-radio>
+            </el-radio-group>
+          </el-form-item>
         </el-tab-pane>
         <el-tab-pane label="常规检查">
           <div class="quick-anchor">
@@ -1050,7 +1175,6 @@
             <el-tag type="info" @click.native="goAnchor('#anchor-blood-biochemistry')">血生化</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-coagulation-function')">凝血功能</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-blood-routine')">血常规</el-tag>
-            <el-tag type="info" @click.native="goAnchor('#anchor-ecg')">ECG</el-tag>
           </div>
           <h3>常规检查</h3>
           <el-card id="anchor-blood-biochemistry">
@@ -1070,7 +1194,7 @@
                   <el-input clearable v-model="mr.routineExamination.HDL" placeholder="mmol/L"></el-input>
                 </el-form-item>
                 <el-form-item label="非HDL">
-                  <el-input clearable disabled v-model="mr.routineExamination.notHDL" placeholder="mmol/L"></el-input>
+                  <el-input clearable readonly v-model="mr.routineExamination.notHDL" placeholder="mmol/L"></el-input>
                   <span>（非HDL：[TC] - [HDL-C]）</span>
                 </el-form-item>
                 <el-form-item label="APOA1">
@@ -1083,6 +1207,15 @@
               <el-form-item label="血糖">
                 <el-form-item label="空腹">
                   <el-input clearable v-model="mr.routineExamination.bloodGlucoseFasting" placeholder="mmol/L"></el-input>
+                </el-form-item>
+                <el-form-item label="餐后两小时">
+                  <el-input clearable v-model="mr.routineExamination.bloodGlucose2hAfterMeal" placeholder="mmol/L"></el-input>
+                </el-form-item>
+                <el-form-item label="随机">
+                  <el-input clearable v-model="mr.routineExamination.bloodGlucoseRandom" placeholder="mmol/L"></el-input>
+                </el-form-item>
+                <el-form-item label="糖化血红蛋白HbA1c">
+                  <el-input clearable v-model="mr.routineExamination.HbA1c" placeholder="%"></el-input>
                 </el-form-item>
               </el-form-item>
               <el-form-item label="血清心肌坏死标志物">
@@ -1111,6 +1244,9 @@
                   <el-radio label="1">是</el-radio>
                 </el-radio-group>
                 <template v-if="mr.routineExamination.isInflammatoryMarkers=='1'">
+                  <el-form-item label="CRP">
+                    <el-input clearable v-model="mr.routineExamination.inflammationCRP" placeholder="mg/L"></el-input>
+                  </el-form-item>
                   <el-form-item label="hs-CRP">
                     <el-input clearable v-model="mr.routineExamination.inflammationHsCRP" placeholder="mg/L"></el-input>
                   </el-form-item>
@@ -1123,11 +1259,17 @@
                   <el-form-item label="TNFα">
                     <el-input clearable v-model="mr.routineExamination.inflammationTNFAlpha" placeholder="μg/L"></el-input>
                   </el-form-item>
+                  <el-form-item label="ESR">
+                    <el-input clearable v-model="mr.routineExamination.inflammationESR" placeholder="mm/h"></el-input>
+                  </el-form-item>
                 </template>
               </el-form-item>
               <el-form-item label="心衰">
+                <el-form-item label="BNP">
+                  <el-input clearable v-model="mr.routineExamination.heartFailureNTproBNP" placeholder="pg/mL"></el-input>
+                </el-form-item>
                 <el-form-item label="NT-proBNP">
-                  <el-input clearable v-model="mr.routineExamination.heartFailureNTproBNP" placeholder="ng/L"></el-input>
+                  <el-input clearable v-model="mr.routineExamination.heartFailureNTproBNP" placeholder="pg/mL"></el-input>
                 </el-form-item>
               </el-form-item>
               <el-form-item label="电解质">
@@ -1296,92 +1438,106 @@
               </el-form-item>
             </div>
           </el-card>
+        </el-tab-pane>
+        <el-tab-pane label="特殊检查">
+          <div class="quick-anchor">
+            <span>快速访问：</span>
+            <el-tag @click.native="goAnchor('#anchor-submit-btn')">保存病历</el-tag>
+            <br><br><span>特殊检查：</span>
+            <el-tag type="info" @click.native="goAnchor('#anchor-ecg')">ECG</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-exercise-ecg')">运动ECG</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-holter-ecg')">长程ECG</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-ucg')">心脏彩超</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-cta')">CT血管造影</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-pci')">冠脉介入</el-tag>
+          </div>
+          <h3>特殊检查</h3>
           <el-card id="anchor-ecg">
             <div slot="header"><span>ECG</span></div>
             <div>
               <el-form-item label="病理性Q波">
-                <el-radio-group v-model="mr.routineExamination.ecg.pathologicalQWave.isPathologicalQWave">
+                <el-radio-group v-model="mr.specialExamination.ecg.pathologicalQWave.isPathologicalQWave">
                   <el-radio label="0">无</el-radio>
                   <el-radio label="1">有</el-radio>
                 </el-radio-group>
-                <template v-if="mr.routineExamination.ecg.pathologicalQWave.isPathologicalQWave==='1'">
+                <template v-if="mr.specialExamination.ecg.pathologicalQWave.isPathologicalQWave==='1'">
                   <el-form-item label="导联（多选）">
-                    <el-checkbox-group v-model="mr.routineExamination.ecg.pathologicalQWave.qWaveLeads">
+                    <el-checkbox-group v-model="mr.specialExamination.ecg.pathologicalQWave.qWaveLeads">
                       <el-checkbox v-for="item in staticIndex.leadSystem" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
                   </el-form-item>
                 </template>
               </el-form-item>
               <el-form-item label="ST段改变">
-                <el-radio-group v-model="mr.routineExamination.ecg.stSegmentChange.isStSegmentChange">
+                <el-radio-group v-model="mr.specialExamination.ecg.stSegmentChange.isStSegmentChange">
                   <el-radio label="0">无</el-radio>
                   <el-radio label="1">有</el-radio>
                 </el-radio-group>
-                <template v-if="mr.routineExamination.ecg.stSegmentChange.isStSegmentChange==='1'">
+                <template v-if="mr.specialExamination.ecg.stSegmentChange.isStSegmentChange==='1'">
                   <el-form-item label="ST段压低">
-                    <el-radio-group v-model="mr.routineExamination.ecg.stSegmentChange.stSegmentDepression.isStSegmentDepression">
+                    <el-radio-group v-model="mr.specialExamination.ecg.stSegmentChange.stSegmentDepression.isStSegmentDepression">
                       <el-radio label="0">无</el-radio>
                       <el-radio label="1">有</el-radio>
                     </el-radio-group>
-                    <template v-if="mr.routineExamination.ecg.stSegmentChange.stSegmentDepression.isStSegmentDepression==='1'">
+                    <template v-if="mr.specialExamination.ecg.stSegmentChange.stSegmentDepression.isStSegmentDepression==='1'">
                       <el-form-item label="导联">
                         <el-button icon="el-icon-plus" size="mini" type="primary"
-                        @click.prevent="addRow(mr.routineExamination.ecg.stSegmentChange.stSegmentDepression.changeDetail,
+                        @click.prevent="addRow(mr.specialExamination.ecg.stSegmentChange.stSegmentDepression.changeDetail,
                         {lead: '',amplitude: ''})">
                         添加</el-button>
                       </el-form-item>
                       <el-form-item
-                        v-for="(change, index) in mr.routineExamination.ecg.stSegmentChange.stSegmentDepression.changeDetail"
+                        v-for="(change, index) in mr.specialExamination.ecg.stSegmentChange.stSegmentDepression.changeDetail"
                         :label="'导联' + (index + 1)"
                         :key="change.id">
                         <el-select v-model="change.lead" placeholder="请选择导联">
                           <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.leadSystem" :key="item.id"></el-option>
                         </el-select>
                         <el-input clearable v-model="change.amplitude" placeholder="幅度（mV）"></el-input>
-                        <el-button @click.prevent="removeRow(mr.routineExamination.ecg.stSegmentChange.stSegmentDepression.changeDetail, index)" type="danger" icon="el-icon-delete"></el-button>
+                        <el-button @click.prevent="removeRow(mr.specialExamination.ecg.stSegmentChange.stSegmentDepression.changeDetail, index)" type="danger" icon="el-icon-delete"></el-button>
                       </el-form-item>
                     </template>
                   </el-form-item>
                   <el-form-item label="ST段抬高">
-                    <el-radio-group v-model="mr.routineExamination.ecg.stSegmentChange.stSegmentElevation.isStSegmentElevation">
+                    <el-radio-group v-model="mr.specialExamination.ecg.stSegmentChange.stSegmentElevation.isStSegmentElevation">
                       <el-radio label="0">无</el-radio>
                       <el-radio label="1">有</el-radio>
                     </el-radio-group>
-                    <template v-if="mr.routineExamination.ecg.stSegmentChange.stSegmentElevation.isStSegmentElevation==='1'">
+                    <template v-if="mr.specialExamination.ecg.stSegmentChange.stSegmentElevation.isStSegmentElevation==='1'">
                       <el-form-item label="导联">
                         <el-button icon="el-icon-plus" size="mini" type="primary"
-                        @click.prevent="addRow(mr.routineExamination.ecg.stSegmentChange.stSegmentElevation.changeDetail,
+                        @click.prevent="addRow(mr.specialExamination.ecg.stSegmentChange.stSegmentElevation.changeDetail,
                         {lead: '',amplitude: ''})">
                         添加</el-button>
                       </el-form-item>
                       <el-form-item
-                        v-for="(change, index) in mr.routineExamination.ecg.stSegmentChange.stSegmentElevation.changeDetail"
+                        v-for="(change, index) in mr.specialExamination.ecg.stSegmentChange.stSegmentElevation.changeDetail"
                         :label="'导联' + (index + 1)"
                         :key="change.id">
                         <el-select v-model="change.lead" placeholder="请选择导联">
                           <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.leadSystem" :key="item.id"></el-option>
                         </el-select>
                         <el-input clearable v-model="change.amplitude" placeholder="幅度（mV）"></el-input>
-                        <el-button @click.prevent="removeRow(mr.routineExamination.ecg.stSegmentChange.stSegmentElevation.changeDetail, index)" type="danger" icon="el-icon-delete"></el-button>
+                        <el-button @click.prevent="removeRow(mr.specialExamination.ecg.stSegmentChange.stSegmentElevation.changeDetail, index)" type="danger" icon="el-icon-delete"></el-button>
                       </el-form-item>
                     </template>
                   </el-form-item>
                 </template>
               </el-form-item>
               <el-form-item label="T波改变">
-                <el-radio-group v-model="mr.routineExamination.ecg.tWaveChange.isTWaveChange">
+                <el-radio-group v-model="mr.specialExamination.ecg.tWaveChange.isTWaveChange">
                   <el-radio label="0">无</el-radio>
                   <el-radio label="1">有</el-radio>
                 </el-radio-group>
-                <template v-if="mr.routineExamination.ecg.tWaveChange.isTWaveChange==='1'">
+                <template v-if="mr.specialExamination.ecg.tWaveChange.isTWaveChange==='1'">
                   <el-form-item label="导联">
                     <el-button icon="el-icon-plus" size="mini" type="primary"
-                    @click.prevent="addRow(mr.routineExamination.ecg.tWaveChange.changeDetail,
+                    @click.prevent="addRow(mr.specialExamination.ecg.tWaveChange.changeDetail,
                     {lead: '',amplitude: '',waveform:''})">
                     添加</el-button>
                   </el-form-item>
                   <el-form-item
-                    v-for="(change, index) in mr.routineExamination.ecg.tWaveChange.changeDetail"
+                    v-for="(change, index) in mr.specialExamination.ecg.tWaveChange.changeDetail"
                     :label="'导联' + (index + 1)"
                     :key="change.id">
                     <el-select v-model="change.lead" placeholder="请选择导联">
@@ -1391,47 +1547,35 @@
                       <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.ecgWaveforms" :key="item.id"></el-option>
                     </el-select>
                     <el-input clearable v-model="change.amplitude" placeholder="幅度（mV）"></el-input>
-                    <el-button @click.prevent="removeRow(mr.routineExamination.ecg.tWaveChange.changeDetail, index)" type="danger" icon="el-icon-delete"></el-button>
+                    <el-button @click.prevent="removeRow(mr.specialExamination.ecg.tWaveChange.changeDetail, index)" type="danger" icon="el-icon-delete"></el-button>
                   </el-form-item>
                 </template>
               </el-form-item>
               <el-form-item label="心律失常">
-                <el-radio-group v-model="mr.routineExamination.ecg.arrhythmia.isArrhythmia">
+                <el-radio-group v-model="mr.specialExamination.ecg.arrhythmia.isArrhythmia">
                   <el-radio label="0">无</el-radio>
                   <el-radio label="1">有</el-radio>
                 </el-radio-group>
-                <template v-if="mr.routineExamination.ecg.arrhythmia.isArrhythmia==='1'">
+                <template v-if="mr.specialExamination.ecg.arrhythmia.isArrhythmia==='1'">
                   <el-form-item label="类型（多选）">
-                    <el-checkbox-group v-model="mr.routineExamination.ecg.arrhythmia.arrhythmiaTypes">
+                    <el-checkbox-group v-model="mr.specialExamination.ecg.arrhythmia.arrhythmiaTypes">
                       <el-checkbox v-for="item in staticIndex.arrhythmiaTypes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
-                    <el-input clearable v-model="mr.routineExamination.ecg.arrhythmia.arrhythmiaTypeOthers" placeholder="填写其他类型" v-if="mr.routineExamination.ecg.arrhythmia.arrhythmiaTypes.indexOf('11')>='0'"></el-input>
+                    <el-input clearable v-model="mr.specialExamination.ecg.arrhythmia.arrhythmiaTypeOthers" placeholder="填写其他类型" v-if="mr.specialExamination.ecg.arrhythmia.arrhythmiaTypes.indexOf('11')>='0'"></el-input>
                   </el-form-item>
                 </template>
               </el-form-item>
               <el-form-item label="ECG结果">
-                <el-radio-group v-model="mr.routineExamination.ecg.result">
+                <el-radio-group v-model="mr.specialExamination.ecg.result">
                   <el-radio label="1">正常</el-radio>
                   <el-radio label="0">异常</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="检查结论">
-                <el-input clearable type="textarea" v-model="mr.routineExamination.ecg.findings"></el-input>
+                <el-input clearable type="textarea" v-model="mr.specialExamination.ecg.findings"></el-input>
               </el-form-item>
             </div>
           </el-card>
-        </el-tab-pane>
-        <el-tab-pane label="特殊检查">
-          <div class="quick-anchor">
-            <span>快速访问：</span>
-            <el-tag @click.native="goAnchor('#anchor-submit-btn')">保存病历</el-tag>
-            <br><br><span>特殊检查：</span>
-            <el-tag type="info" @click.native="goAnchor('#anchor-exercise-ecg')">运动ECG</el-tag>
-            <el-tag type="info" @click.native="goAnchor('#anchor-holter-ecg')">长程ECG</el-tag>
-            <el-tag type="info" @click.native="goAnchor('#anchor-ucg')">心脏彩超</el-tag>
-            <el-tag type="info" @click.native="goAnchor('#anchor-pci')">冠脉介入</el-tag>
-          </div>
-          <h3>特殊检查</h3>
           <el-card id="anchor-exercise-ecg">
             <div slot="header"><span>运动ECG</span></div>
             <div>
@@ -1674,7 +1818,7 @@
                         </el-form-item>
                         <el-form-item
                           v-for="(detail, subIndex) in change.leads"
-                          :label="'导联' + (index + 1)"
+                          :label="'导联' + (subIndex + 1)"
                           :key="detail.id">
                           <el-select v-model="detail.lead" placeholder="请选择导联">
                             <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.leadSystem" :key="item.id"></el-option>
@@ -1716,7 +1860,7 @@
                         </el-form-item>
                         <el-form-item
                           v-for="(detail, subIndex) in change.leads"
-                          :label="'导联' + (index + 1)"
+                          :label="'导联' + (subIndex + 1)"
                           :key="detail.id">
                           <el-select v-model="detail.lead" placeholder="请选择导联">
                             <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.leadSystem" :key="item.id"></el-option>
@@ -1760,7 +1904,7 @@
                     </el-form-item>
                     <el-form-item
                       v-for="(detail, subIndex) in change.leads"
-                      :label="'导联' + (index + 1)"
+                      :label="'导联' + (subIndex + 1)"
                       :key="detail.id">
                       <el-select v-model="detail.lead" placeholder="请选择导联">
                         <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.leadSystem" :key="item.id"></el-option>
@@ -1803,7 +1947,7 @@
               <el-form-item label="IVST">
                 <el-input clearable v-model="mr.specialExamination.ucg.IVST" placeholder="mm"></el-input>
               </el-form-item>
-              <el-form-item label="LVEF < 40%">
+              <!-- <el-form-item label="LVEF < 40%">
                 <el-radio-group v-model="mr.specialExamination.ucg.isLVEFLtFortyPercent">
                   <el-radio label="0">否</el-radio>
                   <el-radio label="1">是</el-radio>
@@ -1816,6 +1960,33 @@
                     <el-input clearable v-model="mr.specialExamination.ucg.EF" placeholder=""></el-input>
                   </el-form-item>
                 </template>
+              </el-form-item> -->
+              <el-form-item label="主动脉根部直径">
+                <el-input clearable v-model="mr.specialExamination.ucg.aorticRootDiameter" placeholder="mm"></el-input>
+              </el-form-item>
+              <el-form-item label="主动脉最粗直径">
+                <el-input clearable v-model="mr.specialExamination.ucg.aorticThickestDiameter" placeholder="mm"></el-input>
+              </el-form-item>
+              <el-form-item label="LVEF">
+                <el-input clearable v-model="mr.specialExamination.ucg.LVEF" placeholder="%"></el-input>
+              </el-form-item>
+              <el-form-item label="E/A">
+                <el-input clearable v-model="mr.specialExamination.ucg.ratioEToA" placeholder=""></el-input>
+              </el-form-item>
+              <el-form-item label="EF">
+                <el-input clearable v-model="mr.specialExamination.ucg.EF" placeholder="%"></el-input>
+              </el-form-item>
+              <el-form-item label="FS">
+                <el-input clearable v-model="mr.specialExamination.ucg.FS" placeholder="%"></el-input>
+              </el-form-item>
+              <el-form-item label="肺动脉压力">
+                <el-input clearable v-model="mr.specialExamination.ucg.FS" placeholder="mmHg"></el-input>
+              </el-form-item>
+              <el-form-item label="心包积液">
+                <el-radio-group v-model="mr.specialExamination.ucg.pericardialEffusion">
+                  <el-radio label="0">否</el-radio>
+                  <el-radio label="1">是</el-radio>
+                </el-radio-group>
               </el-form-item>
               <el-form-item label="局部运动异常">
                 <el-radio-group v-model="mr.specialExamination.ucg.isLocalMotionAbnormality">
@@ -1858,6 +2029,89 @@
               </el-form-item>
               <el-form-item label="检查结论">
                 <el-input clearable type="textarea" v-model="mr.specialExamination.ucg.findings"></el-input>
+              </el-form-item>
+            </div>
+          </el-card>
+          <el-card id="anchor-cta">
+            <div slot="header"><span>CT血管造影</span></div>
+            <div>
+              <el-form-item label="冠脉CTA">
+                <el-form-item label="冠脉分布">
+                  <el-radio-group v-model="mr.specialExamination.cta.coronaryDistributionType">
+                    <el-radio :label="item.id" v-for="item in staticIndex.coronaryDistributionTypes" :key="item.id">{{item.text}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="狭窄部位">
+                  <el-button icon="el-icon-plus" size="mini" type="primary"
+                  @click.prevent="addRow(mr.specialExamination.cta.narrowSites,
+                  {lesionSite: '', percentage: ''})">
+                  添加</el-button>
+                </el-form-item>
+                <el-form-item
+                  v-for="(cause, index) in mr.specialExamination.cta.narrowSites"
+                  :label="'部位' + (index + 1)"
+                  :key="cause.id">
+                  <el-select v-model="cause.typeName" placeholder="请选择部位">
+                    <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.lesionSiteList" :key="item.id"></el-option>
+                  </el-select>
+                  <el-input clearable v-model="cause.onsetTime" placeholder="比例（%）"></el-input>
+                  <el-button @click.prevent="removeRow(mr.specialExamination.cta.lesionSites, index)" type="danger" icon="el-icon-delete"></el-button>
+                </el-form-item>
+                <el-form-item label="冠脉畸形">
+                  <el-radio-group v-model="mr.specialExamination.cta.isCoronaryMalformations">
+                    <el-radio label="0">无</el-radio>
+                    <el-radio label="1">有</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="侧枝循环">
+                  <el-radio-group v-model="mr.specialExamination.cta.isCollateralCirculation">
+                    <el-radio label="0">无</el-radio>
+                    <el-radio label="1">有</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="心肌桥">
+                  <el-radio-group v-model="mr.specialExamination.cta.isMyocardialBridge">
+                    <el-radio label="0">无</el-radio>
+                    <el-radio label="1">有</el-radio>
+                  </el-radio-group>
+                  <template v-if="mr.specialExamination.cta.isMyocardialBridge==='1'">
+                    <el-form-item label="部位">
+                      <el-input clearable v-model="mr.specialExamination.cta.myocardialBridgeSite"></el-input>
+                    </el-form-item>
+                  </template>
+                </el-form-item>
+              </el-form-item>
+              <el-form-item label="大动脉CTA">
+                <el-form-item label="主动脉重要分支有无受累或缺血">
+                  <el-radio-group v-model="mr.specialExamination.cta.aortaImportantBranchInvolvementOrIschemia">
+                    <el-radio label="0">无</el-radio>
+                    <el-radio label="1">有</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="胸腔积液">
+                  <el-radio-group v-model="mr.specialExamination.cta.pleuralEffusion">
+                    <el-radio :label="item.id" v-for="item in staticIndex.pleuralEffusionList" :key="item.id">{{item.text}}</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="假腔内血栓形成">
+                  <el-radio-group v-model="mr.specialExamination.cta.intravascularThrombusFormation">
+                    <el-radio label="0">无</el-radio>
+                    <el-radio label="1">有</el-radio>
+                  </el-radio-group>
+                  <template v-if="mr.specialExamination.cta.isMyocardialBridge==='1'">
+                    <el-form-item label="部位">
+                      <el-input clearable v-model="mr.specialExamination.cta.myocardialBridgeSite"></el-input>
+                    </el-form-item>
+                  </template>
+                </el-form-item>
+              </el-form-item>
+              <el-form-item label="肺动脉CTA">
+                <el-form-item label="结果">
+                  <el-radio-group v-model="mr.specialExamination.cta.pulmonaryArteryResult">
+                    <el-radio label="0">阴性</el-radio>
+                    <el-radio label="1">阳性</el-radio>
+                  </el-radio-group>
+                </el-form-item>
               </el-form-item>
             </div>
           </el-card>
@@ -2069,6 +2323,27 @@
               <el-radio label="1">是</el-radio>
             </el-radio-group>
           </el-form-item>
+          <el-form-item label="主动脉夹层">
+            <el-radio-group v-model="mr.admissionDiagnosis.isAorticDissection">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+            <el-select v-model="mr.admissionDiagnosis.aorticDissectionType" placeholder="请选择类型"  v-if="mr.admissionDiagnosis.isAorticDissection==='1'">
+              <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.aorticDissectionTypes" :key="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="肺动脉栓塞">
+            <el-radio-group v-model="mr.admissionDiagnosis.isPulmonaryEmbolism">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="马凡综合征">
+            <el-radio-group v-model="mr.admissionDiagnosis.isMarfanSyndrome">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item label="其他">
             <el-radio-group v-model="mr.admissionDiagnosis.isDiagnosisOthers">
               <el-radio label="0">否</el-radio>
@@ -2079,12 +2354,12 @@
             </template>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane label="确诊诊断">
+        <el-tab-pane label="出院诊断">
           <div class="quick-anchor">
             <span>快速访问：</span>
             <el-tag @click.native="goAnchor('#anchor-submit-btn')">保存病历</el-tag>
           </div>
-          <h3>确诊诊断</h3>
+          <h3>出院诊断</h3>
           <el-form-item label="无痛性心肌缺血">
             <el-radio-group v-model="mr.dischargeDiagnosis.isSilentMyocardialIschemia">
               <el-radio label="0">否</el-radio>
@@ -2140,6 +2415,27 @@
           </el-form-item>
           <el-form-item label="胸痛原因待查">
             <el-radio-group v-model="mr.dischargeDiagnosis.isChestPainOfUnknownOrigin">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="主动脉夹层">
+            <el-radio-group v-model="mr.dischargeDiagnosis.isAorticDissection">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+            <el-select v-model="mr.dischargeDiagnosis.aorticDissectionType" placeholder="请选择类型"  v-if="mr.dischargeDiagnosis.isAorticDissection==='1'">
+              <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.aorticDissectionTypes" :key="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="肺动脉栓塞">
+            <el-radio-group v-model="mr.dischargeDiagnosis.isPulmonaryEmbolism">
+              <el-radio label="0">否</el-radio>
+              <el-radio label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="马凡综合征">
+            <el-radio-group v-model="mr.dischargeDiagnosis.isMarfanSyndrome">
               <el-radio label="0">否</el-radio>
               <el-radio label="1">是</el-radio>
             </el-radio-group>
@@ -2298,7 +2594,8 @@ export default {
   mounted () {
     this.$store.dispatch('GetDoctorList')
     this.$store.dispatch('GetStaticIndex')
-    getMr().then(response => {
+    getMr(this.$route.params.id).then(response => {
+      console.log(response)
       this.mr = response.data.data
       this.mrLoading = false
     }).catch(error => {
