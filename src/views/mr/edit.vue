@@ -424,7 +424,7 @@
                       <el-checkbox v-for="item in staticIndex.oldMyocardialInfarctionLocations" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
                     <el-form-item label="其他部位" v-if="mr.anamnesis.oldMyocardialInfarctionLocation.indexOf('-1')>='0'">
-                      <el-input clearable v-model="mr.anamnesis.oldMyocardialInfarctionLocationOthers" placeholder="填写其他部位"></el-input>
+                      <el-input clearable v-model="mr.anamnesis.oldMyocardialInfarctionLocationOthers"></el-input>
                     </el-form-item>
                   </el-form-item>
                 </template>
@@ -2186,7 +2186,7 @@
                 <el-checkbox-group v-model="mr.specialExamination.pci.contrastMedia">
                   <el-checkbox v-for="item in staticIndex.contrastMedia" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                 </el-checkbox-group>
-                <el-form-item label="其他造影剂" v-if="mr.specialExamination.pci.contrastMedia.indexOf('5')>=0">
+                <el-form-item label="其他造影剂" v-if="mr.specialExamination.pci.contrastMedia.indexOf('-1')>=0">
                   <el-input clearable v-model="mr.specialExamination.pci.contrastMediaOthers"></el-input>
                 </el-form-item>
               </el-form-item>
@@ -2694,7 +2694,7 @@ export default {
     this.$store.dispatch('GetDoctorList')
     this.$store.dispatch('GetStaticIndex')
     getMr(this.$route.params.id).then(response => {
-      console.log(response)
+      // console.log(response)
       this.mr = response.data.data
       this.mrLoading = false
     }).catch(error => {
