@@ -96,12 +96,12 @@
             <el-checkbox-group v-model="mr.historyOfPresentIllness.careCauses">
               <el-checkbox v-for="disease in staticIndex.historyOfPresentIllnessCareCauses" :key="disease.id" :label="disease.id">{{disease.text}}</el-checkbox>
             </el-checkbox-group>
-            <el-form-item label="其他就诊原因" v-if="mr.historyOfPresentIllness.careCauses.indexOf('6')>=0">
+            <el-form-item label="其他就诊原因" v-if="mr.historyOfPresentIllness.careCauses.indexOf('-1')>=0">
               <el-input clearable v-model="mr.historyOfPresentIllness.careCauseOthers"></el-input>
             </el-form-item>
           </el-form-item>
           <el-card v-for="disease in staticIndex.historyOfPresentIllnessCareCauses" :key="disease.id"
-          v-if="mr.historyOfPresentIllness.careCauses.indexOf(disease.id)>=0&&disease.id!=='6'" :id="'anchor-'+historyOfPresentIllness[disease.id]">
+          v-if="mr.historyOfPresentIllness.careCauses.indexOf(disease.id)>=0&&disease.id!=='-1'" :id="'anchor-'+historyOfPresentIllness[disease.id]">
             <div slot="header"><span>{{disease.text}}</span></div>
             <div>
               <el-form-item label="发病缓急" v-if="disease.id==='1'">
@@ -119,7 +119,7 @@
                 <el-checkbox-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].onsetTime">
                   <el-checkbox v-for="item in staticIndex.onsetTimeOfIllness" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                 </el-checkbox-group>
-                <el-form-item label="其他发病时间" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].onsetTime.indexOf('5')>=0">
+                <el-form-item label="其他发病时间" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].onsetTime.indexOf('-1')>=0">
                   <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].onsetTimeOthers"></el-input>
                 </el-form-item>
               </el-form-item>
@@ -168,18 +168,18 @@
                   <el-select v-model="bodyPart.bodyPartName" placeholder="请选择部位">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseBodyPartNames" :key="item.id"></el-option>
                   </el-select>
-                  <el-input clearable v-model="bodyPart.bodyPartNameOthers" v-if="bodyPart.bodyPartName==='11'" placeholder="其他部位"></el-input>
+                  <el-input clearable v-model="bodyPart.bodyPartNameOthers" v-if="bodyPart.bodyPartName==='-1'" placeholder="其他部位"></el-input>
                   <el-select v-model="bodyPart.bodyPartRange" placeholder="请选择范围" v-if="disease.id==='1'">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseBodyPartRanges" :key="item.id"></el-option>
                   </el-select>
                   <el-select v-model="bodyPart.qualityOfPain" placeholder="请选择性质">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseQualityOfPain" :key="item.id"></el-option>
                   </el-select>
-                  <el-input clearable v-model="bodyPart.qualityOfPainOthers" v-if="bodyPart.qualityOfPain==='13'" placeholder="其他性质"></el-input>
+                  <el-input clearable v-model="bodyPart.qualityOfPainOthers" v-if="bodyPart.qualityOfPain==='-1'" placeholder="其他性质"></el-input>
                   <el-select v-model="bodyPart.durationOfPain" placeholder="请选择持续时间">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseDurationOfPain" :key="item.id"></el-option>
                   </el-select>
-                  <el-input clearable v-model="bodyPart.durationOfPainOthers" v-if="bodyPart.durationOfPain==='6'" placeholder="其他持续时间"></el-input>
+                  <el-input clearable v-model="bodyPart.durationOfPainOthers" v-if="bodyPart.durationOfPain==='-1'" placeholder="其他持续时间"></el-input>
                   <el-select v-model="bodyPart.painDegree" placeholder="请选择程度">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseasePainDegree" :key="item.id"></el-option>
                   </el-select>
@@ -189,7 +189,7 @@
                   <el-checkbox-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors">
                     <el-checkbox v-for="item in staticIndex.relievingFactors" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
-                  <el-form-item label="其他缓解因素" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('5')>=0">
+                  <el-form-item label="其他缓解因素" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('-1')>=0">
                     <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactorsOthers"></el-input>
                   </el-form-item>
                 </el-form-item>
@@ -203,7 +203,7 @@
                   <el-checkbox-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactors">
                     <el-checkbox v-for="item in staticIndex.precipitatingFactors" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
-                  <el-form-item label="其他诱因" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactors.indexOf('13')>=0">
+                  <el-form-item label="其他诱因" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactors.indexOf('-1')>=0">
                     <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactorsOthers"></el-input>
                   </el-form-item>
                 </el-form-item>
@@ -211,7 +211,7 @@
                   <el-checkbox-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].radiationSites">
                     <el-checkbox v-for="item in staticIndex.radiationSites" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
-                  <el-form-item label="其他放射部位" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].radiationSites.indexOf('10')>=0">
+                  <el-form-item label="其他放射部位" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].radiationSites.indexOf('-1')>=0">
                     <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].radiationSitesOthers"></el-input>
                   </el-form-item>
                 </el-form-item>
@@ -219,7 +219,7 @@
                   <el-checkbox-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].simultaneousPhenomena">
                     <el-checkbox v-for="item in staticIndex.simultaneousPhenomena" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
-                  <el-form-item label="其他伴随症状" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].simultaneousPhenomena.indexOf('24')>=0">
+                  <el-form-item label="其他伴随症状" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].simultaneousPhenomena.indexOf('-1')>=0">
                     <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].simultaneousPhenomenonOthers"></el-input>
                   </el-form-item>
                 </el-form-item>
@@ -423,7 +423,7 @@
                     <el-checkbox-group v-model="mr.anamnesis.oldMyocardialInfarctionLocation">
                       <el-checkbox v-for="item in staticIndex.oldMyocardialInfarctionLocations" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
-                    <el-form-item label="其他部位" v-if="mr.anamnesis.oldMyocardialInfarctionLocation.indexOf('7')>='0'">
+                    <el-form-item label="其他部位" v-if="mr.anamnesis.oldMyocardialInfarctionLocation.indexOf('-1')>='0'">
                       <el-input clearable v-model="mr.anamnesis.oldMyocardialInfarctionLocationOthers" placeholder="填写其他部位"></el-input>
                     </el-form-item>
                   </el-form-item>
@@ -463,7 +463,7 @@
                     <el-checkbox-group v-model="mr.anamnesis.otherHeartDiseaseType">
                       <el-checkbox v-for="item in staticIndex.otherHeartDiseaseTypes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
-                    <el-form-item label="其他类型" v-if="mr.anamnesis.otherHeartDiseaseType.indexOf('8')>='0'">
+                    <el-form-item label="其他类型" v-if="mr.anamnesis.otherHeartDiseaseType.indexOf('-1')>='0'">
                       <el-input clearable v-model="mr.anamnesis.otherHeartDiseaseTypeOthers"></el-input>
                     </el-form-item>
                   </el-form-item>
@@ -486,7 +486,7 @@
                     <el-checkbox-group v-model="mr.anamnesis.deepVenousThrombosisInducements">
                       <el-checkbox v-for="item in staticIndex.deepVenousThrombosisInducements" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
-                    <el-form-item label="其他诱因" v-if="mr.anamnesis.deepVenousThrombosisInducements.indexOf('5')>='0'">
+                    <el-form-item label="其他诱因" v-if="mr.anamnesis.deepVenousThrombosisInducements.indexOf('-1')>='0'">
                       <el-input clearable v-model="mr.anamnesis.deepVenousThrombosisInducementsOthers"></el-input>
                     </el-form-item>
                   </el-form-item>
@@ -633,7 +633,7 @@
                     <el-checkbox-group v-model="mr.riskFactors.cigretteType">
                       <el-checkbox v-for="item in staticIndex.cigretteTypes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
-                    <el-form-item label="其他类型" v-if="mr.riskFactors.cigretteType.indexOf('5')>= 0">
+                    <el-form-item label="其他类型" v-if="mr.riskFactors.cigretteType.indexOf('-1')>= 0">
                       <el-input clearable v-model="mr.riskFactors.cigretteTypeOthers"></el-input>
                     </el-form-item>
                   </el-form-item>
@@ -669,7 +669,7 @@
                     <el-checkbox-group v-model="mr.riskFactors.wineType">
                       <el-checkbox v-for="item in staticIndex.wineTypes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
-                    <el-form-item label="其他类型" v-if="mr.riskFactors.wineType.indexOf('5')>= 0">
+                    <el-form-item label="其他类型" v-if="mr.riskFactors.wineType.indexOf('-1')>= 0">
                       <el-input clearable v-model="mr.riskFactors.wineTypeOthers"></el-input>
                     </el-form-item>
                   </el-form-item>
@@ -807,7 +807,7 @@
                 <el-checkbox-group v-model="mr.riskFactors.exerciseMode">
                   <el-checkbox v-for="item in staticIndex.exerciseModes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                 </el-checkbox-group>
-                <el-form-item label="其他方式" v-if="mr.riskFactors.exerciseMode.indexOf('3')>= 0">
+                <el-form-item label="其他方式" v-if="mr.riskFactors.exerciseMode.indexOf('-1')>= 0">
                   <el-input clearable v-model="mr.riskFactors.exerciseModeOthers"></el-input>
                 </el-form-item>
               </el-form-item>
@@ -960,7 +960,7 @@
                     <el-select v-model="member.etiology" placeholder="请选择发病原因">
                       <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.suddenDeathEtiologies" :key="item.id"></el-option>
                     </el-select>
-                    <el-input clearable v-model="member.etiologyOthers" placeholder="填写其他病因" v-if="member.etiology==='4'"></el-input>
+                    <el-input clearable v-model="member.etiologyOthers" placeholder="填写其他病因" v-if="member.etiology==='-1'"></el-input>
                     <el-button @click.prevent="removeRow(mr.familyHistory.suddenDeath.onsetMembers, index)" type="danger" icon="el-icon-delete"></el-button>
                   </el-form-item>
                 </template>
@@ -1791,7 +1791,7 @@
                     <el-select v-model="type.arrhythmiaType" placeholder="请选择类型">
                       <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.arrhythmiaTypes" :key="item.id"></el-option>
                     </el-select>
-                    <el-input clearable v-model="type.arrhythmiaTypeOthers" placeholder="其他类型" v-if="type.arrhythmiaType==='11'"></el-input>
+                    <el-input clearable v-model="type.arrhythmiaTypeOthers" placeholder="其他类型" v-if="type.arrhythmiaType==='-1'"></el-input>
                     <el-input clearable v-model="type.duration" placeholder="持续时间" style="vertical-align:baseline;"><template slot="append">分钟</template></el-input>
                     <el-button @click.prevent="removeRow(mr.specialExamination.holterEcg.arrhythmia.arrhythmiaTypes, index)" type="danger" icon="el-icon-delete"></el-button>
                   </el-form-item>
