@@ -23,6 +23,26 @@ export function getMr (recordId) {
   })
 }
 
+export function insertMr (record) {
+  return request({
+    url: '/record/insertRecord',
+    method: 'post',
+    data: {
+      record
+    }
+  })
+}
+
+export function updateMr (record) {
+  return request({
+    url: '/record/updateRecord',
+    method: 'post',
+    data: {
+      record
+    }
+  })
+}
+
 export function getDoctorList () {
   return request({
     url: '/user/getAllDoctorIdAndName',

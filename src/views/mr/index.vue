@@ -80,7 +80,6 @@ export default {
     getMrList () {
       getMrList(this.pagination.pageNum, this.pagination.pageSize).then(response => {
         this.mrListLoading = false
-        console.log(response)
         if (response.data.data) {
           this.mrList = response.data.data
           this.pagination.pageTotal = response.data.total

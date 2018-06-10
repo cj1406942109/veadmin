@@ -69,7 +69,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="出生日期">
-            <el-date-picker type="date" placeholder="选择日期" v-model="mr.basicInfo.birthday" :picker-options="pickerOptions"></el-date-picker>
+            <el-date-picker type="date" placeholder="选择日期" v-model="mr.basicInfo.birthday" :picker-options="pickerOptions" value-format="yyyy-MM-dd"></el-date-picker>
           </el-form-item>
           <el-form-item label="出生地">
             <location-picker :location="mr.basicInfo.birthAddress" :grade="2"></location-picker>
@@ -167,10 +167,10 @@
                   <el-select v-model="bodyPart.bodyPartName" placeholder="请选择部位">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseBodyPartNames" :key="item.id"></el-option>
                   </el-select>
+                  <el-input clearable v-model="bodyPart.bodyPartNameOthers" v-if="bodyPart.bodyPartName==='11'" placeholder="其他部位"></el-input>
                   <el-select v-model="bodyPart.bodyPartRange" placeholder="请选择范围" v-if="disease.id==='1'">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseBodyPartRanges" :key="item.id"></el-option>
                   </el-select>
-                  <el-input clearable v-model="bodyPart.bodyPartNameOthers" v-if="bodyPart.bodyPartName==='11'" placeholder="其他部位"></el-input>
                   <el-select v-model="bodyPart.qualityOfPain" placeholder="请选择性质">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseQualityOfPain" :key="item.id"></el-option>
                   </el-select>
@@ -2459,7 +2459,7 @@
 </template>
 
 <script>
-import { getMr } from '@/api/mr'
+import { getMr, insertMr, updateMr } from '@/api/mr'
 import { mapGetters } from 'vuex'
 import LocationPicker from '@/components/location-picker'
 export default {
@@ -2564,11 +2564,39 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '保存成功!'
-        })
-        this.$router.push({ path: '/mr' })
+        if (this.mr._id && this.mr._id !== '') {
+          // 编辑
+          updateMr(this.mr).then(response => {
+            if (response.status) {
+              this.$message({
+                type: 'success',
+                message: '保存成功!'
+              })
+              this.$router.push({ path: '/mr' })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '保存失败，请稍后重试!'
+              })
+            }
+          })
+        } else {
+          // 新增
+          insertMr(this.mr).then(response => {
+            if (response.status) {
+              this.$message({
+                type: 'success',
+                message: '保存成功!'
+              })
+              this.$router.push({ path: '/mr' })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '保存失败，请稍后重试!'
+              })
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -2605,6 +2633,22 @@ export default {
         message: '病历数据加载失败，请重试'
       })
     })
+  },
+  watch: {
+    // 监听路由变化，用于处理，从编辑页面跳转到添加页面，数据不重置的问题
+    '$route' (to, from) {
+      // console.log(to, from)
+      getMr(this.$route.params.id).then(response => {
+        this.mr = response.data.data
+        this.mrLoading = false
+      }).catch(error => {
+        console.log(error)
+        this.$message({
+          type: 'error',
+          message: '病历数据加载失败，请重试'
+        })
+      })
+    }
   },
   components: {
     LocationPicker
