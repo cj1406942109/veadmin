@@ -2,7 +2,7 @@
   <div class="content-wrapper">
     <!-- <el-alert :title="prompt" type="warning" close-text="知道了" style="margin-bottom: 20px;"></el-alert> -->
     <el-form ref="mrForm" :model="mr" :rules="rules" label-width="200px" :label-position="position" v-loading.body="mrLoading" v-if="mr">
-      <el-tabs :tab-position="position" type="border-card">
+      <el-tabs :tab-position="position" type="border-card" v-model="activeTab">
         <el-tab-pane label="患者基本信息">
           <div class="quick-anchor">
             <span>快速访问：</span>
@@ -189,15 +189,15 @@
                   <el-checkbox-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors">
                     <el-checkbox v-for="item in staticIndex.relievingFactors" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                   </el-checkbox-group>
+                  <el-form-item label="时间"
+                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('1')>=0 ||
+                    mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('2')>=0 ||
+                    mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('3')>=0">
+                    <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingDuration" placeholder="缓解时间"><template slot="append">分钟</template></el-input>
+                  </el-form-item>
                   <el-form-item label="其他缓解因素" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('-1')>=0">
                     <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactorsOthers"></el-input>
                   </el-form-item>
-                </el-form-item>
-                <el-form-item label="时间"
-                v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('1')>=0 ||
-                  mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('2')>=0 ||
-                  mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('3')>=0">
-                  <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingDuration" placeholder="缓解时间（分钟）"></el-input>
                 </el-form-item>
                 <el-form-item label="诱因（多选）">
                   <el-checkbox-group v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].precipitatingFactors">
@@ -481,7 +481,7 @@
                 </el-radio-group>
                 <template v-if="mr.anamnesis.isDeepVenousThrombosis==='1'">
                   <el-input clearable v-model="mr.anamnesis.deepVenousThrombosisOnsetTimeYear" placeholder="填写年份"><template slot="append">年</template></el-input>
-                  <el-input clearable v-model="mr.anamnesis.deepVenousThrombosisOnsetTimeYear" placeholder="填写月份"><template slot="append">月前发生</template></el-input>
+                  <el-input clearable v-model="mr.anamnesis.deepVenousThrombosisOnsetTimeMonth" placeholder="填写月份"><template slot="append">月前发生</template></el-input>
                   <el-form-item label="诱因（多选）">
                     <el-checkbox-group v-model="mr.anamnesis.deepVenousThrombosisInducements">
                       <el-checkbox v-for="item in staticIndex.deepVenousThrombosisInducements" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
@@ -576,7 +576,7 @@
                       <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.hemorrhageTypes" :key="item.id"></el-option>
                     </el-select>
                     <el-input clearable v-model="type.onsetTime" placeholder="填写发生时间"></el-input>
-                    <el-input clearable v-model="type.onsetFrequency" placeholder="填写发生次数"></el-input>
+                    <el-input clearable v-model="type.onsetFrequency" placeholder="填写发生次数" style="vertical-align:baseline;"><template slot="append">次</template></el-input>
                     <el-button @click.prevent="removeRow(mr.anamnesis.hemorrhageTypes, index)" type="danger" icon="el-icon-delete"></el-button>
                   </el-form-item>
                 </template>
@@ -826,10 +826,10 @@
                 </el-form-item>
               </el-form-item>
               <el-form-item label="身高">
-                <el-input clearable v-model="mr.riskFactors.height"><template slot="append">cm</template></el-input>
+                <el-input clearable v-model="mr.riskFactors.height" @input="calcBMI"><template slot="append">cm</template></el-input>
               </el-form-item>
               <el-form-item label="体重">
-                <el-input clearable v-model="mr.riskFactors.weight"><template slot="append">kg</template></el-input>
+                <el-input clearable v-model="mr.riskFactors.weight" @input="calcBMI"><template slot="append">kg</template></el-input>
               </el-form-item>
               <el-form-item label="BMI">
                 <el-input clearable readonly v-model="mr.riskFactors.BMI"><template slot="append">kg/m<sup>2</sup></template></el-input>
@@ -1227,7 +1227,7 @@
             <div>
               <el-form-item label="血脂全套">
                 <el-form-item label="TC">
-                  <el-input clearable v-model="mr.routineExamination.TC"><template slot="append">mmol/L</template></el-input>
+                  <el-input clearable v-model="mr.routineExamination.TC" @input="calcNotHDL"><template slot="append">mmol/L</template></el-input>
                 </el-form-item>
                 <el-form-item label="TG">
                   <el-input clearable v-model="mr.routineExamination.TG"><template slot="append">mmol/L</template></el-input>
@@ -1236,7 +1236,7 @@
                   <el-input clearable v-model="mr.routineExamination.LDL"><template slot="append">mmol/L</template></el-input>
                 </el-form-item>
                 <el-form-item label="HDL-C">
-                  <el-input clearable v-model="mr.routineExamination.HDL"><template slot="append">mmol/L</template></el-input>
+                  <el-input clearable v-model="mr.routineExamination.HDL" @input="calcNotHDL"><template slot="append">mmol/L</template></el-input>
                 </el-form-item>
                 <el-form-item label="非HDL">
                   <el-input clearable readonly v-model="mr.routineExamination.notHDL"><template slot="append">mmol/L</template></el-input>
@@ -1311,7 +1311,7 @@
               </el-form-item>
               <el-form-item label="心衰">
                 <el-form-item label="BNP">
-                  <el-input clearable v-model="mr.routineExamination.heartFailureNTproBNP"><template slot="append">pg/mL</template></el-input>
+                  <el-input clearable v-model="mr.routineExamination.heartFailureBNP"><template slot="append">pg/mL</template></el-input>
                 </el-form-item>
                 <el-form-item label="NT-proBNP">
                   <el-input clearable v-model="mr.routineExamination.heartFailureNTproBNP"><template slot="append">pg/mL</template></el-input>
@@ -1408,7 +1408,7 @@
               </el-form-item>
               <el-form-item label="INR">
                 <el-input clearable v-model="mr.routineExamination.INR"></el-input>
-                <el-select v-model="mr.physicalExamination.isINRStable" placeholder="请选择类型">
+                <el-select v-model="mr.routineExamination.isINRStable" placeholder="请选择类型">
                   <el-option label="稳定" value="1"></el-option>
                   <el-option label="不稳定" value="0"></el-option>
                 </el-select>
@@ -1494,7 +1494,7 @@
             <el-tag type="info" @click.native="goAnchor('#anchor-holter-ecg')">长程ECG</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-ucg')">心脏彩超</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-cta')">CT血管造影</el-tag>
-            <el-tag type="info" @click.native="goAnchor('#anchor-pci')">冠脉介入</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-pci')" v-if="false">冠脉介入</el-tag>
           </div>
           <h3>特殊检查</h3>
           <el-card id="anchor-ecg">
@@ -1606,14 +1606,14 @@
                     <el-checkbox-group v-model="mr.specialExamination.ecg.arrhythmia.arrhythmiaTypes">
                       <el-checkbox v-for="item in staticIndex.arrhythmiaTypes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
-                    <el-form-item label="其他类型" v-if="mr.specialExamination.ecg.arrhythmia.arrhythmiaTypes.indexOf('11')>='0'">
+                    <el-form-item label="其他类型" v-if="mr.specialExamination.ecg.arrhythmia.arrhythmiaTypes.indexOf('-1')>='0'">
                       <el-input clearable v-model="mr.specialExamination.ecg.arrhythmia.arrhythmiaTypeOthers"></el-input>
                     </el-form-item>
                   </el-form-item>
                 </template>
               </el-form-item>
               <el-form-item label="ECG结果">
-                <el-radio-group v-model="mr.specialExamination.ecg.result">
+                <el-radio-group v-model="mr.specialExamination.ecg.isResultNormal">
                   <el-radio label="1">正常</el-radio>
                   <el-radio label="0">异常</el-radio>
                 </el-radio-group>
@@ -1627,9 +1627,7 @@
             <div slot="header"><span>运动ECG</span></div>
             <div>
               <el-form-item>
-                运动
-                <el-input clearable v-model="mr.specialExamination.exerciseEcg.exerciseDuration" ><template slot="append">分钟</template></el-input>
-                后
+                <el-input clearable v-model="mr.specialExamination.exerciseEcg.exerciseDuration" ><template slot="prepend">运动</template><template slot="append">分钟后</template></el-input>
                 <el-form-item label="心绞痛">
                   <el-radio-group v-model="mr.specialExamination.exerciseEcg.isExerciseAngina">
                     <el-radio label="0">无</el-radio>
@@ -2027,7 +2025,7 @@
                 <el-input clearable v-model="mr.specialExamination.ucg.FS"><template slot="append">%</template></el-input>
               </el-form-item>
               <el-form-item label="肺动脉压力">
-                <el-input clearable v-model="mr.specialExamination.ucg.FS"><template slot="append">mmHg</template></el-input>
+                <el-input clearable v-model="mr.specialExamination.ucg.pulmonaryArteryPressure"><template slot="append">mmHg</template></el-input>
               </el-form-item>
               <el-form-item label="心包积液">
                 <el-radio-group v-model="mr.specialExamination.ucg.pericardialEffusion">
@@ -2095,13 +2093,13 @@
                   添加</el-button>
                 </el-form-item>
                 <el-form-item
-                  v-for="(cause, index) in mr.specialExamination.cta.narrowSites"
+                  v-for="(site, index) in mr.specialExamination.cta.narrowSites"
                   :label="'部位' + (index + 1)"
-                  :key="cause.id">
-                  <el-select v-model="cause.typeName" placeholder="请选择部位">
+                  :key="site.id">
+                  <el-select v-model="site.lesionSite" placeholder="请选择部位">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.lesionSiteList" :key="item.id"></el-option>
                   </el-select>
-                  <el-input clearable v-model="cause.onsetTime" placeholder="比例" style="vertical-align:baseline;"><template slot="append">%</template></el-input>
+                  <el-input clearable v-model="site.percentage" placeholder="比例" style="vertical-align:baseline;"><template slot="append">%</template></el-input>
                   <el-button @click.prevent="removeRow(mr.specialExamination.cta.lesionSites, index)" type="danger" icon="el-icon-delete"></el-button>
                 </el-form-item>
                 <el-form-item label="冠脉畸形">
@@ -2157,7 +2155,7 @@
               </el-form-item>
             </div>
           </el-card>
-          <el-card id="anchor-pci">
+          <el-card id="anchor-pci" v-if="false">
             <div slot="header"><span>冠脉介入</span></div>
             <div>
               <el-form-item label="编号">
@@ -2287,7 +2285,7 @@
                   <el-option label="II" value="II"></el-option>
                   <el-option label="III" value="III"></el-option>
                 </el-select>
-                <el-select v-model="segment.isOstialLesion" placeholder="请选择病变类型">
+                <el-select v-model="segment.kindsOfLesions" placeholder="请选择病变类型">
                   <el-option label="A型" value="A"></el-option>
                   <el-option label="B型" value="B"></el-option>
                   <el-option label="C型" value="C"></el-option>
@@ -2550,6 +2548,7 @@ export default {
       // 病历基本状态
       mr: null,
       mrLoading: true,
+      activeTab: '0',
 
       // 日期选择框选项
       pickerOptions: {
@@ -2629,6 +2628,32 @@ export default {
         member.gender = '2'
       }
     },
+    calcBMI () {
+      if (this.mr.riskFactors.height && this.mr.riskFactors.weight) {
+        let height = this.mr.riskFactors.height
+        let weight = this.mr.riskFactors.weight
+        if (parseInt(height).toString() !== 'NaN' && parseInt(weight).toString() !== 'NaN') {
+          this.mr.riskFactors.BMI = (weight / ((height / 100) * (height / 100))).toFixed(2)
+        } else {
+          this.mr.riskFactors.BMI = ''
+        }
+      } else {
+        this.mr.riskFactors.BMI = ''
+      }
+    },
+    calcNotHDL () {
+      if (this.mr.routineExamination.TC && this.mr.routineExamination.HDL) {
+        let TC = this.mr.routineExamination.TC
+        let HDL = this.mr.routineExamination.HDL
+        if (parseInt(TC).toString() !== 'NaN' && parseInt(HDL).toString() !== 'NaN') {
+          this.mr.routineExamination.notHDL = (TC - HDL).toFixed(2)
+        } else {
+          this.mr.routineExamination.notHDL = ''
+        }
+      } else {
+        this.mr.routineExamination.notHDL = ''
+      }
+    },
     submit () {
       this.$confirm('点击确定将保存已填写的所有信息，再次编辑需要在病历列表中选择操作, 是否继续？', '提示', {
         confirmButtonText: '确定',
@@ -2680,11 +2705,7 @@ export default {
        * offsetTop 是当前元素距离offsetParent的距离
        * offsetParent是距离当前元素最近的一个设置了postion属性的元素
        */
-      console.log(this.$el.querySelector('.el-form').offsetTop)
-      console.log(this.$el.querySelector('.el-form').offsetParent)
       let fixedHeight = this.$el.querySelector('.el-form').offsetTop - 50
-      console.log(this.$el.querySelector(selector).offsetTop)
-      console.log(this.$el.querySelector(selector).offsetParent)
       let anchor = this.$el.querySelector(selector)
       document.body.scrollTop = anchor.offsetTop + fixedHeight
       document.documentElement.scrollTop = anchor.offsetTop + fixedHeight
@@ -2709,8 +2730,10 @@ export default {
     // 监听路由变化，用于处理，从编辑页面跳转到添加页面，数据不重置的问题
     '$route' (to, from) {
       // console.log(to, from)
+      this.mrLoading = true
       getMr(this.$route.params.id).then(response => {
         this.mr = response.data.data
+        this.activeTab = '0'
         this.mrLoading = false
       }).catch(error => {
         console.log(error)
