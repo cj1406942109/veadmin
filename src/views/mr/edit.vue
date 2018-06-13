@@ -12,11 +12,8 @@
           <el-form-item label="姓名" prop="basicInfo.name">
             <el-input clearable v-model="mr.basicInfo.name"></el-input>
           </el-form-item>
-          <el-form-item label="就诊卡号" prop="basicInfo.medicalCardNum">
-            <el-input clearable v-model="mr.basicInfo.medicalCardNum"></el-input>
-          </el-form-item>
-          <el-form-item label="身份证号" prop="basicInfo.idNum">
-            <el-input clearable v-model="mr.basicInfo.idNum"></el-input>
+          <el-form-item label="住院号" prop="basicInfo.admissionNum">
+            <el-input clearable v-model="mr.basicInfo.admissionNum"></el-input>
           </el-form-item>
           <el-form-item label="联系方式" prop="cellphone1|cellphone2|telephone">
             <el-input clearable placeholder="填写患者手机号1" v-model="mr.basicInfo.cellphone1"></el-input>
@@ -29,9 +26,6 @@
           <el-form-item label="年龄" prop="basicInfo.age">
             <el-input clearable v-model="mr.basicInfo.age"></el-input>
           </el-form-item>
-          <el-form-item label="住院号" prop="basicInfo.admissionNum">
-            <el-input clearable v-model="mr.basicInfo.admissionNum"></el-input>
-          </el-form-item>
           <el-form-item label="床位号" prop="basicInfo.bedNum">
             <el-input clearable v-model="mr.basicInfo.bedNum"></el-input>
           </el-form-item>
@@ -43,18 +37,26 @@
           <el-form-item label="记录者" prop="basicInfo.recorder">
             <el-input clearable v-model="mr.basicInfo.recorder"></el-input>
           </el-form-item>
+          <el-form-item label="就诊卡号" prop="basicInfo.medicalCardNum">
+            <el-input clearable v-model="mr.basicInfo.medicalCardNum"></el-input>
+          </el-form-item>
+          <el-form-item label="身份证号" prop="basicInfo.idNum">
+            <el-input clearable v-model="mr.basicInfo.idNum"></el-input>
+          </el-form-item>
           <el-form-item label="住院时间" v-if="screen.size.id>=2">
-            <el-date-picker v-model="mr.basicInfo.hospitalizationTime" type="datetimerange" range-separator="至" start-placeholder="住院开始日期" end-placeholder="住院结束日期">
-          </el-date-picker>
+            <el-date-picker v-model="mr.basicInfo.hospitalizationTime" type="datetimerange" range-separator="至" start-placeholder="住院开始日期" end-placeholder="住院结束日期" value-format="timestamp"></el-date-picker>
           </el-form-item>
           <template v-else>
             <el-form-item label="住院开始时间">
-              <el-date-picker v-model="mr.basicInfo.hospitalizationTime[0]" type="datetime" placeholder="选择入院时间"></el-date-picker>
+              <el-date-picker v-model="mr.basicInfo.hospitalizationTime[0]" type="datetime" placeholder="选择入院时间" value-format="timestamp"></el-date-picker>
             </el-form-item>
             <el-form-item label="住院结束时间">
-              <el-date-picker v-model="mr.basicInfo.hospitalizationTime[1]" type="datetime" placeholder="选择出院时间"></el-date-picker>
+              <el-date-picker v-model="mr.basicInfo.hospitalizationTime[1]" type="datetime" placeholder="选择出院时间" value-format="timestamp"></el-date-picker>
             </el-form-item>
           </template>
+          <el-form-item label="住院时长">
+            <el-input :value="hospitalizationDuration" readonly></el-input>
+          </el-form-item>
           <el-form-item label="出院状态">
             <el-radio-group v-model="mr.basicInfo.dischargeStatus"><el-radio label="死亡">死亡</el-radio><el-radio label="存活">存活</el-radio></el-radio-group>
           </el-form-item>
@@ -832,7 +834,7 @@
                 <el-input clearable v-model="mr.riskFactors.weight" @input="calcBMI"><template slot="append">kg</template></el-input>
               </el-form-item>
               <el-form-item label="BMI">
-                <el-input clearable readonly v-model="mr.riskFactors.BMI"><template slot="append">kg/m<sup>2</sup></template></el-input>
+                <el-input readonly v-model="mr.riskFactors.BMI"><template slot="append">kg/m<sup>2</sup></template></el-input>
                 <span>BMI：体重/身高<sup>2</sup>，kg/m<sup>2</sup></span>
               </el-form-item>
               <el-form-item label="腰围">
@@ -1239,7 +1241,7 @@
                   <el-input clearable v-model="mr.routineExamination.HDL" @input="calcNotHDL"><template slot="append">mmol/L</template></el-input>
                 </el-form-item>
                 <el-form-item label="非HDL">
-                  <el-input clearable readonly v-model="mr.routineExamination.notHDL"><template slot="append">mmol/L</template></el-input>
+                  <el-input readonly v-model="mr.routineExamination.notHDL"><template slot="append">mmol/L</template></el-input>
                   <span>非HDL：[TC] - [HDL-C]</span>
                 </el-form-item>
                 <el-form-item label="APOA1">
@@ -1494,7 +1496,7 @@
             <el-tag type="info" @click.native="goAnchor('#anchor-holter-ecg')">长程ECG</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-ucg')">心脏彩超</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-cta')">CT血管造影</el-tag>
-            <el-tag type="info" @click.native="goAnchor('#anchor-pci')" v-if="false">冠脉介入</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-pci')">冠脉介入</el-tag>
           </div>
           <h3>特殊检查</h3>
           <el-card id="anchor-ecg">
@@ -2155,7 +2157,7 @@
               </el-form-item>
             </div>
           </el-card>
-          <el-card id="anchor-pci" v-if="false">
+          <el-card id="anchor-pci">
             <div slot="header"><span>冠脉介入</span></div>
             <div>
               <el-form-item label="编号">
@@ -2563,8 +2565,8 @@ export default {
       rules: {
         // 包含二级属性的值，需要加引号才能生效
         'basicInfo.name': [{ required: true, message: '患者姓名不能为空', trigger: 'blur' }],
-        'basicInfo.medicalCardNum': [{ required: true, message: '患者就诊卡号不能为空', trigger: 'blur' }],
-        'basicInfo.idNum': [{ required: true, message: '患者身份证号不能为空', trigger: 'blur' }],
+        // 'basicInfo.medicalCardNum': [{ required: true, message: '患者就诊卡号不能为空', trigger: 'blur' }],
+        // 'basicInfo.idNum': [{ required: true, message: '患者身份证号不能为空', trigger: 'blur' }],
         'cellphone1|cellphone2|telephone': [{ validator: checkContactInfo, trigger: 'blur' }],
         'basicInfo.gender': [{ required: true, message: '请选择患者性别', trigger: 'blur' }],
         'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }],
@@ -2593,6 +2595,19 @@ export default {
         return 'top'
       } else {
         return 'right'
+      }
+    },
+    // 住院时长
+    hospitalizationDuration () {
+      if (this.mr.basicInfo.hospitalizationTime[1] && this.mr.basicInfo.hospitalizationTime[0]) {
+        let timediff = (this.mr.basicInfo.hospitalizationTime[1] - this.mr.basicInfo.hospitalizationTime[0]) / 1000
+        console.log(timediff)
+        let days = parseInt(timediff / 86400)
+        let hours = parseInt(timediff % 86400 / 3600)
+        let mins = parseInt(timediff % 86400 % 3600 / 60)
+        return days + '天' + hours + '小时' + mins + '分钟'
+      } else {
+        return ''
       }
     }
   },
