@@ -160,7 +160,7 @@
                 <el-form-item label="部位">
                   <el-button icon="el-icon-plus" size="mini" type="primary"
                   @click.prevent="addRow(mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].diseaseBodyParts,
-                  {bodyPartName: '', bodyPartRange: '', bodyPartNameOthers: '',qualityOfPain: '',qualityOfPainOthers: '', durationOfPain: '', durationOfPainOthers:'', painDegree:''})">
+                  {bodyPartName: '', bodyPartRange: '', bodyPartNameOthers: '',qualityOfPain: '',qualityOfPainOthers: '', durationOfPainMin: '', durationOfPainMax:'', durationOfPainOrdinary:'', painDegree:''})">
                   添加</el-button>
                 </el-form-item>
                 <el-form-item
@@ -178,10 +178,12 @@
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseQualityOfPain" :key="item.id"></el-option>
                   </el-select>
                   <el-input clearable v-model="bodyPart.qualityOfPainOthers" v-if="bodyPart.qualityOfPain==='-1'" placeholder="其他性质"></el-input>
-                  <el-select v-model="bodyPart.durationOfPain" placeholder="请选择持续时间">
+                  <!-- <el-select v-model="bodyPart.durationOfPain" placeholder="请选择持续时间">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseaseDurationOfPain" :key="item.id"></el-option>
-                  </el-select>
-                  <el-input clearable v-model="bodyPart.durationOfPainOthers" v-if="bodyPart.durationOfPain==='-1'" placeholder="其他持续时间"></el-input>
+                  </el-select> -->
+                  <el-input clearable v-model="bodyPart.durationOfPainMin" placeholder="最短持续时间" style="vertical-align:baseline;"><template slot="append">分钟</template></el-input>
+                  <el-input clearable v-model="bodyPart.durationOfPainMax" placeholder="最长持续时间" style="vertical-align:baseline;"><template slot="append">分钟</template></el-input>
+                  <el-input clearable v-model="bodyPart.durationOfPainOrdinary" placeholder="一般持续时间" style="vertical-align:baseline;"><template slot="append">分钟</template></el-input>
                   <el-select v-model="bodyPart.painDegree" placeholder="请选择程度">
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.diseasePainDegree" :key="item.id"></el-option>
                   </el-select>
@@ -2102,7 +2104,7 @@
                     <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.lesionSiteList" :key="item.id"></el-option>
                   </el-select>
                   <el-input clearable v-model="site.percentage" placeholder="比例" style="vertical-align:baseline;"><template slot="append">%</template></el-input>
-                  <el-button @click.prevent="removeRow(mr.specialExamination.cta.lesionSites, index)" type="danger" icon="el-icon-delete"></el-button>
+                  <el-button @click.prevent="removeRow(mr.specialExamination.cta.narrowSites, index)" type="danger" icon="el-icon-delete"></el-button>
                 </el-form-item>
                 <el-form-item label="冠脉畸形">
                   <el-radio-group v-model="mr.specialExamination.cta.isCoronaryMalformations">
@@ -2129,6 +2131,22 @@
                 </el-form-item>
               </el-form-item>
               <el-form-item label="大动脉CTA">
+                <el-form-item label="类型">
+                  <el-checkbox-group v-model="mr.specialExamination.cta.mainArteryTypes">
+                    <el-checkbox v-for="item in staticIndex.mainArteryTypes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="内膜破口">
+                  <el-radio-group v-model="mr.specialExamination.cta.isIntimalTear">
+                    <el-radio label="0">无</el-radio>
+                    <el-radio label="1">有</el-radio>
+                  </el-radio-group>
+                  <el-form-item label="部位" v-if="mr.specialExamination.cta.isIntimalTear==='1'">
+                    <el-checkbox-group v-model="mr.specialExamination.cta.intimalTearSites">
+                      <el-checkbox v-for="item in staticIndex.intimalTearSiteList" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
+                    </el-checkbox-group>
+                  </el-form-item>
+                </el-form-item>
                 <el-form-item label="主动脉重要分支受累或缺血">
                   <el-radio-group v-model="mr.specialExamination.cta.aortaImportantBranchInvolvementOrIschemia">
                     <el-radio label="0">无</el-radio>
@@ -2148,11 +2166,17 @@
                 </el-form-item>
               </el-form-item>
               <el-form-item label="肺动脉CTA">
-                <el-form-item label="结果">
-                  <el-radio-group v-model="mr.specialExamination.cta.pulmonaryArteryResult">
-                    <el-radio label="0">阴性</el-radio>
-                    <el-radio label="1">阳性</el-radio>
+                <el-form-item label="肺栓塞">
+                  <el-radio-group v-model="mr.specialExamination.cta.isPulmonaryEmbolism">
+                    <el-radio label="0">无</el-radio>
+                    <el-radio label="1">有</el-radio>
                   </el-radio-group>
+                  <el-form-item label="部位类型" v-if="mr.specialExamination.cta.isPulmonaryEmbolism==='1'">
+                    <el-checkbox-group v-model="mr.specialExamination.cta.pulmonaryEmbolismTypes">
+                      <el-checkbox v-for="item in staticIndex.pulmonaryEmbolismTypes" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
+                    </el-checkbox-group>
+                    <img src="./cta-img.jpg" alt="肺栓塞部位图" style="border: 1px dashed #999;border-radius:5px;vertical-align:middle;max-width:100%">
+                  </el-form-item>
                 </el-form-item>
               </el-form-item>
             </div>
@@ -2172,7 +2196,7 @@
                 </el-select>
                 <el-input clearable v-model="mr.specialExamination.pci.thrombolysisInterval"
                 v-if="mr.specialExamination.pci.pciType==='3'||mr.specialExamination.pci.pciType==='4'"
-                placeholder="PCI距溶栓时间（h）"></el-input>
+                placeholder="PCI距溶栓时间"><template slot="append">小时</template></el-input>
               </el-form-item>
               <el-form-item>
                 <el-input clearable v-model="mr.specialExamination.pci.onsetIntervalDay"><template slot="prepend">发病后</template><template slot="append">天</template></el-input>
@@ -2566,10 +2590,10 @@ export default {
         // 包含二级属性的值，需要加引号才能生效
         'basicInfo.name': [{ required: true, message: '患者姓名不能为空', trigger: 'blur' }],
         // 'basicInfo.medicalCardNum': [{ required: true, message: '患者就诊卡号不能为空', trigger: 'blur' }],
-        // 'basicInfo.idNum': [{ required: true, message: '患者身份证号不能为空', trigger: 'blur' }],
+        'basicInfo.idNum': [{ pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/, message: '身份证号格式错误', trigger: 'blur' }],
         'cellphone1|cellphone2|telephone': [{ validator: checkContactInfo, trigger: 'blur' }],
         'basicInfo.gender': [{ required: true, message: '请选择患者性别', trigger: 'blur' }],
-        'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }],
+        'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }, { type: 'number', message: '年龄必须为数字值' }],
         'basicInfo.admissionNum': [{ required: true, message: '患者住院号不能为空', trigger: 'blur' }],
         'basicInfo.bedNum': [{ required: true, message: '患者床位号不能为空', trigger: 'blur' }],
         'basicInfo.doctor': [{ required: true, message: '请选择患者主治医生', trigger: 'blur' }],
@@ -2601,7 +2625,6 @@ export default {
     hospitalizationDuration () {
       if (this.mr.basicInfo.hospitalizationTime[1] && this.mr.basicInfo.hospitalizationTime[0]) {
         let timediff = (this.mr.basicInfo.hospitalizationTime[1] - this.mr.basicInfo.hospitalizationTime[0]) / 1000
-        console.log(timediff)
         let days = parseInt(timediff / 86400)
         let hours = parseInt(timediff % 86400 / 3600)
         let mins = parseInt(timediff % 86400 % 3600 / 60)
