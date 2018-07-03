@@ -8,13 +8,13 @@
       <div class="nav-avatar">
         <el-dropdown trigger="click">
           <span class="el-dropdown-link">
-            <img  src="./default-avatar.png">
-            <span class="hidden-sm-and-down">Jenny</span>
+            <img src="./default-avatar.png">
+            <span class="hidden-sm-and-down">{{nickname}}</span>
             <i class="el-icon-arrow-down el-icon--right hidden-sm-and-down"></i>
           </span>
            <el-dropdown-menu slot="dropdown">
             <el-dropdown-item>我的信息</el-dropdown-item>
-            <el-dropdown-item divided>退出登录</el-dropdown-item>
+            <el-dropdown-item divided @click.native="handleLogout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -23,11 +23,23 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   name: 'app-header',
+  computed: {
+    ...mapGetters([
+      'nickname'
+    ])
+  },
   methods: {
     sidebarToggleOpen () {
       this.$store.dispatch('sidebarToggleOpen')
+    },
+    handleLogout () {
+      this.$store.dispatch('Logout').then(() => {
+        // In order to re-instantiate the vue-router object to avoid bugs
+        location.reload()
+      })
     }
   }
 }

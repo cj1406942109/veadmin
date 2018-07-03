@@ -1,72 +1,26 @@
 <template>
   <div class="app-sidebar">
-    <el-menu class="sideabr-el-menu" :collapse="!!sidebar.minimized" background-color="#364150" text-color="#b4bcc8" active-text-color="#36c6d3">
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span slot="title">导航一</span>
-        </template>
-        <el-menu-item-group>
-          <span slot="title">分组一</span>
-          <el-menu-item index="1-1">选项1</el-menu-item>
-          <el-menu-item index="1-2">选项2</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="分组2">
-          <el-menu-item index="1-3">选项3</el-menu-item>
-        </el-menu-item-group>
-        <el-submenu index="1-4">
-          <span slot="title">选项4</span>
-          <el-menu-item index="1-4-1">选项1</el-menu-item>
+    <el-menu class="sideabr-el-menu" mode="vertical" :router="true" :default-active="$route.path" :collapse="!!sidebar.minimized" background-color="#364150" text-color="#b4bcc8" active-text-color="#36c6d3">
+      <!-- <sidebar-item :routes="routerMap"></sidebar-item> -->
+      <template v-for="item in permissionRouters" v-if="!item.hidden&&item.children">
+        <!-- 显示一级路由 -->
+        <el-menu-item :index="item.path+'/'+item.children[0].path" :key="item.name" v-if="item.children.length===1 && !item.children[0].children">
+          <svg-icon v-if="item.children[0].meta&&item.children[0].meta.icon" :icon-class="item.children[0].meta.icon"></svg-icon>
+          <span v-if="item.children[0].meta&&item.children[0].meta.title" slot="title">{{item.children[0].meta.title}}</span>
+        </el-menu-item>
+        <!-- 显示二级路由 -->
+        <el-submenu :index="item.path" :key="item.name" v-if="item.children.length>1">
+          <template slot="title">
+            <svg-icon v-if="item.meta&&item.meta.icon" :icon-class="item.meta.icon"></svg-icon>
+            <span slot="title" v-if="item.meta&&item.meta.title">{{item.meta.title}}</span>
+          </template>
+          <!-- 目前只实现二级路由 -->
+          <el-menu-item :index="item.path+'/'+subItem.path" v-for="subItem in item.children" :key="subItem.name" v-if="!subItem.hidden&&!subItem.children">
+            <svg-icon v-if="subItem.meta&&subItem.meta.icon" :icon-class="subItem.meta.icon"></svg-icon>
+            <span slot="title" v-if="subItem.meta&&subItem.meta.title">{{subItem.meta.title}}</span>
+          </el-menu-item>
         </el-submenu>
-      </el-submenu>
-      <el-menu-item index="2">
-        <i class="el-icon-menu"></i>
-        <span slot="title">导航二</span>
-      </el-menu-item>
-      <el-menu-item index="3" disabled>
-        <i class="el-icon-document"></i>
-        <span slot="title">导航三</span>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <i class="el-icon-setting"></i>
-        <span slot="title">导航四</span>
-      </el-menu-item>
-      <el-submenu index="5">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span slot="title">导航五</span>
-        </template>
-        <el-menu-item-group>
-          <span slot="title">分组一</span>
-          <el-menu-item index="5-1">选项1</el-menu-item>
-          <el-menu-item index="5-2">选项2</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="分组2">
-          <el-menu-item index="5-3">选项3</el-menu-item>
-        </el-menu-item-group>
-        <el-submenu index="5-4">
-          <span slot="title">选项4</span>
-          <el-menu-item index="5-4-1">选项1</el-menu-item>
-        </el-submenu>
-      </el-submenu>
-      <el-submenu index="6">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span slot="title">导航六</span>
-        </template>
-        <el-menu-item-group>
-          <span slot="title">分组一</span>
-          <el-menu-item index="6-1">选项1</el-menu-item>
-          <el-menu-item index="6-2">选项2</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="分组2">
-          <el-menu-item index="6-3">选项3</el-menu-item>
-        </el-menu-item-group>
-        <el-submenu index="6-4">
-          <span slot="title">选项4</span>
-          <el-menu-item index="6-4-1">选项1</el-menu-item>
-        </el-submenu>
-      </el-submenu>
+      </template>
     </el-menu>
     <div class="sidebar-mini-toggler" @click="sidebarToggleMin">
       <i class="el-icon-d-arrow-left"></i>
@@ -75,25 +29,18 @@
 </template>
 
 <script>
-import BScroll from 'better-scroll'
+import { mapGetters } from 'vuex'
 export default {
-  data () {
-    return {
-      // isCollapse: false
-    }
-  },
   computed: {
-    sidebar () {
-      return this.$store.state.app.sidebar
-    }
+    ...mapGetters([
+      'permissionRouters',
+      'sidebar'
+    ])
   },
   methods: {
     sidebarToggleMin () {
       this.$store.dispatch('sidebarToggleMin')
     }
-  },
-  components: {
-    BScroll
   }
 }
 </script>
@@ -105,6 +52,11 @@ export default {
     border-right: none;
     background-color: $sidebarBg;
     color: $sidebarColor;
+    .svg-icon {
+      font-size: 20px;
+      vertical-align: -0.3em;
+      margin-right: 10px;
+    }
   }
   .sidebar-mini-toggler {
     border-top: 1px solid $footerBg;

@@ -6,6 +6,7 @@
       <!-- sidebar -->
       <el-aside><app-sidebar/></el-aside>
       <el-container style="min-height:100vh">
+        <app-breadcrumb/>
         <!-- content -->
         <el-main><app-content/></el-main>
         <!-- footer -->
@@ -16,7 +17,7 @@
 </template>
 
 <script>
-import { AppHeader, AppSidebar, AppContent, AppFooter } from './components'
+import { AppHeader, AppSidebar, AppContent, AppBreadcrumb, AppFooter } from './components'
 import { getScreenSize } from '@/utils'
 export default {
   name: 'layout',
@@ -24,6 +25,7 @@ export default {
     AppHeader,
     AppSidebar,
     AppContent,
+    AppBreadcrumb,
     AppFooter
   },
   computed: {
@@ -38,6 +40,13 @@ export default {
     }
   },
   methods: {
+    initSidebar () {
+      if (this.screen.size.id > 1) {
+        this.$store.dispatch('sidebarOpen')
+      } else {
+        this.$store.dispatch('sidebarClose')
+      }
+    },
     handleResize () {
       if (this.screen.size.desc !== getScreenSize(document.body.scrollWidth).desc) {
         this.$store.dispatch('setScreenSize', getScreenSize(document.body.scrollWidth))
@@ -96,6 +105,8 @@ export default {
   mounted () {
     // 获取窗口尺寸
     this.$store.dispatch('setScreenSize', getScreenSize(document.body.scrollWidth))
+    // 页面初始化时根据页面尺寸跳转sidebar状态
+    this.initSidebar()
     window.addEventListener('resize', this.handleResize)
     window.addEventListener('scroll', this.handleScroll)
     let _this = this
@@ -110,7 +121,9 @@ export default {
   },
   beforeDestroy () {
     // 解除事件绑定
+
     // window.removeEventListener()
+
     // window.onscroll = ''
   }
 }
@@ -126,6 +139,7 @@ export default {
     line-height: $headerHeight;
     text-align: center;
     position: fixed;
+    z-index: 999;
     color: $headerColor;
     background-color: $headerBg;
   }
@@ -134,21 +148,26 @@ export default {
     height: 100vh;
     width: $sidebarWidth!important;
     position: fixed;
+    z-index: 99;
     color: $sidebarColor;
     background-color: $sidebarBg;
   }
+  .el-breadcrumb {
+    margin-left: $sidebarWidth!important;
+    margin-top: $headerHeight;
+  }
   .el-main {
     margin-left: $sidebarWidth;
-    margin-top: $headerHeight;
-    padding-bottom: 0;
+    padding-bottom: 20px;
     border: 1px solid transparent;
-    color: $contentColor;
-    background-color: $contentBg;
+    color: $mainColor;
+    background-color: $mainBg;
   }
   .el-footer {
     margin-left: $sidebarWidth;
     height: $footerHeight!important;
     position: relative;
+    z-index: 999;
     padding: 0;
     line-height: $footerHeight;
     color: $footerColor;
@@ -160,7 +179,7 @@ export default {
   .el-aside {
     margin-left: -$sidebarWidth;
   }
-  .el-main, .el-footer {
+  .el-main, .el-footer, .el-breadcrumb {
     margin-left: 0!important;
   }
 }
@@ -169,15 +188,15 @@ export default {
   .el-aside {
     width: $sidebarMiniWidth!important;
   }
-  .el-main, .el-footer {
-    margin-left: $sidebarMiniWidth;
+  .el-main, .el-footer, .el-breadcrumb {
+    margin-left: $sidebarMiniWidth!important;
   }
 }
 .sidebar-hidden.sidebar-mini {
   .el-aside {
     margin-left: -$sidebarMiniWidth;
   }
-  .el-main, .el-footer {
+  .el-main, .el-footer, .el-breadcrumb {
     margin-left: 0!important;
   }
 }
@@ -185,7 +204,8 @@ export default {
 @media (max-width: 767px) {
   .app-wrapper {
     .el-main,
-    .el-footer {
+    .el-footer,
+    .el-breadcrumb {
       margin-left: 0!important;
     }
   }
@@ -194,6 +214,7 @@ export default {
 // Animations
 .el-aside,
 .el-main,
+.el-breadcrumb,
 .el-footer {
   transition: all 0.5s;
 }

@@ -1,21 +1,27 @@
-import Cookies from 'js-cookie'
+import {
+  getSidebarOpenStatus,
+  getSidebarMinStatus,
+  getScreenSize,
+  setSidebarOpenStatus,
+  setSidebarMinStatus,
+  setScreenSize
+} from '@/utils/appStatus'
 
 const app = {
   state: {
     sidebar: {
-      // +"1" => 1
-      // +"0" => 0
-      // "0" => false
-      // "1" => false
-      opened: +Cookies.get('sidebarOpenStatus'),
-      minimized: +Cookies.get('sidebarMinStatus')
+
+      /*
+       * +"1" => 1
+       * +"0" => 0
+       * "0" => false
+       * "1" => false
+       */
+      opened: getSidebarOpenStatus(),
+      minimized: getSidebarMinStatus()
     },
-    backTop: {
-      hidden: true
-    },
-    screen: {
-      size: Cookies.get('screenSize')
-    }
+    backTop: { hidden: true },
+    screen: { size: getScreenSize() }
   },
   getters: {
     sidebar: state => state.sidebar,
@@ -26,22 +32,30 @@ const app = {
     SIDEBAR_TOGGLE_OPEN: state => {
       state.sidebar.opened = !state.sidebar.opened
       if (state.sidebar.opened) {
-        Cookies.set('sidebarOpenStatus', 1)
+        setSidebarOpenStatus(1)
       } else {
-        Cookies.set('sidebarOpenStatus', 0)
+        setSidebarOpenStatus(0)
       }
+    },
+    SIDEBAR_OPEN: state => {
+      state.sidebar.opened = 1
+      setSidebarOpenStatus(1)
+    },
+    SIDEBAR_CLOSE: state => {
+      state.sidebar.opened = 0
+      setSidebarOpenStatus(0)
     },
     SIDEBAR_TOGGLE_MIN: state => {
       state.sidebar.minimized = !state.sidebar.minimized
       if (state.sidebar.minimized) {
-        Cookies.set('sidebarMinStatus', 1)
+        setSidebarMinStatus(1)
       } else {
-        Cookies.set('sidebarMinStatus', 0)
+        setSidebarMinStatus(0)
       }
     },
     SET_SCREEN_SIZE: (state, screenSize) => {
       state.screen.size = screenSize
-      Cookies.set('screenSize', screenSize)
+      setScreenSize(screenSize)
     },
     SET_BACK_TOP_STATUS: (state, backTopStatus) => {
       state.backTop.hidden = backTopStatus === 'hidden'
@@ -50,6 +64,12 @@ const app = {
   actions: {
     sidebarToggleOpen ({ commit }) {
       commit('SIDEBAR_TOGGLE_OPEN')
+    },
+    sidebarOpen ({ commit }) {
+      commit('SIDEBAR_OPEN')
+    },
+    sidebarClose ({ commit }) {
+      commit('SIDEBAR_CLOSE')
     },
     sidebarToggleMin ({ commit }) {
       commit('SIDEBAR_TOGGLE_MIN')
