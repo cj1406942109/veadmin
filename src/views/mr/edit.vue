@@ -26,9 +26,6 @@
           <el-form-item label="年龄" prop="basicInfo.age">
             <el-input clearable v-model="mr.basicInfo.age"></el-input>
           </el-form-item>
-          <el-form-item label="床位号" prop="basicInfo.bedNum">
-            <el-input clearable v-model="mr.basicInfo.bedNum"></el-input>
-          </el-form-item>
           <el-form-item label="主治医生" prop="basicInfo.doctor">
             <el-select v-model="mr.basicInfo.doctor" placeholder="请选择主治医生">
               <el-option :label="item.name" :value="item" v-for="item in doctorList" :key="item.id"></el-option>
@@ -36,6 +33,9 @@
           </el-form-item>
           <el-form-item label="记录者" prop="basicInfo.recorder">
             <el-input clearable v-model="mr.basicInfo.recorder"></el-input>
+          </el-form-item>
+          <el-form-item label="床位号" prop="basicInfo.bedNum">
+            <el-input clearable v-model="mr.basicInfo.bedNum"></el-input>
           </el-form-item>
           <el-form-item label="就诊卡号" prop="basicInfo.medicalCardNum">
             <el-input clearable v-model="mr.basicInfo.medicalCardNum"></el-input>
@@ -2595,7 +2595,7 @@ export default {
         'basicInfo.gender': [{ required: true, message: '请选择患者性别', trigger: 'blur' }],
         'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }, { type: 'number', message: '年龄必须为数字值' }],
         'basicInfo.admissionNum': [{ required: true, message: '患者住院号不能为空', trigger: 'blur' }],
-        'basicInfo.bedNum': [{ required: true, message: '患者床位号不能为空', trigger: 'blur' }],
+        // 'basicInfo.bedNum': [{ required: true, message: '患者床位号不能为空', trigger: 'blur' }],
         'basicInfo.doctor': [{ required: true, message: '请选择患者主治医生', trigger: 'blur' }],
         'basicInfo.recorder': [{ required: true, message: '记录者不能为空', trigger: 'blur' }]
       },
