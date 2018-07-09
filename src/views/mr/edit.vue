@@ -1768,7 +1768,7 @@
                 <el-input clearable v-model="mr.specialExamination.holterEcg.minimalHeartRate"><template slot="append">bpm</template></el-input>
                 <el-input clearable v-model="mr.specialExamination.holterEcg.minimalHeartRateOccurrenceTime"><template slot="prepend">发生时间</template></el-input>
               </el-form-item>
-              <el-form-item label="心率失常">
+              <el-form-item label="心律失常">
                 <el-radio-group v-model="mr.specialExamination.holterEcg.arrhythmia.isArrhythmia">
                   <el-radio label="0">无</el-radio>
                   <el-radio label="1">有</el-radio>
