@@ -195,9 +195,12 @@
                   </el-checkbox-group>
                   <el-form-item label="时间"
                   v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('1')>=0 ||
-                    mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('2')>=0 ||
-                    mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('3')>=0">
+                    mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('2')>=0">
                     <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingDuration" placeholder="缓解时间"><template slot="append">分钟</template></el-input>
+                  </el-form-item>
+                  <el-form-item label="药物名称"
+                  v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('2')>=0">
+                    <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingDrugs" placeholder="舌下含药物名称"></el-input>
                   </el-form-item>
                   <el-form-item label="其他缓解因素" v-if="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactors.indexOf('-1')>=0">
                     <el-input clearable v-model="mr.historyOfPresentIllness[historyOfPresentIllness[disease.id]].relievingFactorsOthers"></el-input>
