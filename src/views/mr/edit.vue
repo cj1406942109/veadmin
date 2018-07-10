@@ -1319,6 +1319,9 @@
                   <el-form-item label="cTnI">
                     <el-input clearable v-model="mr.routineExamination.myocardialCTnI"><template slot="append">μg/L</template></el-input>
                   </el-form-item>
+                  <el-form-item label="hs-cTnI">
+                    <el-input clearable v-model="mr.routineExamination.myocardialHsCTnI"><template slot="append">μg/L</template></el-input>
+                  </el-form-item>
                   <el-form-item label="Mb">
                     <el-input clearable v-model="mr.routineExamination.myocardialMb"><template slot="append">μg/L</template></el-input>
                   </el-form-item>
@@ -1367,6 +1370,9 @@
                 </el-form-item>
                 <el-form-item label="Ca">
                   <el-input clearable v-model="mr.routineExamination.electrolyteCa"><template slot="append">mmol/L</template></el-input>
+                </el-form-item>
+                <el-form-item label="Mg">
+                  <el-input clearable v-model="mr.routineExamination.electrolyteMg"><template slot="append">mmol/L</template></el-input>
                 </el-form-item>
                 <el-form-item label="Cl">
                   <el-input clearable v-model="mr.routineExamination.electrolyteCl"><template slot="append">mmol/L</template></el-input>
@@ -1417,7 +1423,10 @@
                     <el-input clearable v-model="mr.routineExamination.BUN"><template slot="append">mmol/L</template></el-input>
                   </el-form-item>
                   <el-form-item label="GFR">
-                    <el-input clearable v-model="mr.routineExamination.GFR"><template slot="append">ml/min</template></el-input>
+                    <el-input clearable v-model="mr.routineExamination.GFR"><template slot="append">mL/min</template></el-input>
+                  </el-form-item>
+                  <el-form-item label="eGFR">
+                    <el-input clearable v-model="mr.routineExamination.eGFR"><template slot="append">mL/min</template></el-input>
                   </el-form-item>
                 </template>
               </el-form-item>
