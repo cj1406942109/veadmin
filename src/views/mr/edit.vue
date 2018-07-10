@@ -2012,25 +2012,25 @@
           <el-card id="anchor-ucg">
             <div slot="header"><span>心脏彩超</span></div>
             <div>
-              <el-form-item label="LVD">
+              <el-form-item label="左室舒张末期内径（LVD）">
                 <el-input clearable v-model="mr.specialExamination.ucg.LVD"><template slot="append">mm</template></el-input>
               </el-form-item>
-              <el-form-item label="EDV">
+              <el-form-item label="左室舒张末期容量（EDV）">
                 <el-input clearable v-model="mr.specialExamination.ucg.EDV"><template slot="append">mL</template></el-input>
               </el-form-item>
-              <el-form-item label="LVS">
+              <el-form-item label="左室收缩末期内径（LVS）">
                 <el-input clearable v-model="mr.specialExamination.ucg.LVS"><template slot="append">mm</template></el-input>
               </el-form-item>
-              <el-form-item label="ESV">
+              <el-form-item label="左室收缩末期容量（ESV）">
                 <el-input clearable v-model="mr.specialExamination.ucg.ESV"><template slot="append">mL</template></el-input>
               </el-form-item>
-              <el-form-item label="LAD">
+              <el-form-item label="左房内径（LAD）">
                 <el-input clearable v-model="mr.specialExamination.ucg.LAD"><template slot="append">mm</template></el-input>
               </el-form-item>
-              <el-form-item label="LVPW">
+              <el-form-item label="左室后壁厚度（LVPW）">
                 <el-input clearable v-model="mr.specialExamination.ucg.LVPW"><template slot="append">mm</template></el-input>
               </el-form-item>
-              <el-form-item label="IVST">
+              <el-form-item label="室间隔厚度（IVST）">
                 <el-input clearable v-model="mr.specialExamination.ucg.IVST"><template slot="append">mm</template></el-input>
               </el-form-item>
               <!-- <el-form-item label="LVEF < 40%">
