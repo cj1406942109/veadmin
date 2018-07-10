@@ -869,6 +869,7 @@
             <el-tag type="info" @click.native="goAnchor('#anchor-chemic-stroke')">缺血性脑卒中</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-hemorrhagic-stroke')">出血性脑卒中</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-marfan-syndrome')">马凡综合征</el-tag>
+            <el-tag type="info" @click.native="goAnchor('#anchor-other-family-history')">其他</el-tag>
           </div>
           <h3>家族史</h3>
           <el-card id="anchor-premature-chd">
@@ -1065,6 +1066,39 @@
                     </el-select>
                     <el-input clearable v-model="member.onsetAge" placeholder="填写发病年龄"></el-input>
                     <el-button @click.prevent="removeRow(mr.familyHistory.marfanSyndrome.onsetMembers, index)" type="danger" icon="el-icon-delete"></el-button>
+                  </el-form-item>
+                </template>
+              </el-form-item>
+            </div>
+          </el-card>
+          <el-card id="anchor-other-family-history">
+            <div slot="header"><span>其他</span></div>
+            <div>
+              <el-form-item label="有无其他家族史">
+                <el-radio-group v-model="mr.familyHistory.otherFamilyHistory.isOtherFamilyHistory">
+                  <el-radio label="0">无</el-radio>
+                  <el-radio label="1">有</el-radio>
+                </el-radio-group>
+                <template v-if="mr.familyHistory.otherFamilyHistory.isOtherFamilyHistory==='1'">
+                  <el-form-item label="发病成员">
+                    <el-button icon="el-icon-plus" size="mini" type="primary"
+                    @click.prevent="addRow(mr.familyHistory.otherFamilyHistory.onsetMembers,
+                    {diseaseName: '',onsetMember: '',gender: '',onsetAge:''})">
+                    添加</el-button>
+                  </el-form-item>
+                  <el-form-item
+                    v-for="(member, index) in mr.familyHistory.otherFamilyHistory.onsetMembers"
+                    :label="'发病成员' + (index + 1)"
+                    :key="member.id">
+                    <el-input clearable v-model="member.diseaseName" placeholder="填写疾病名称"></el-input>
+                    <el-select v-model="member.onsetMember" placeholder="请选择发病成员" @change="selectOnsetMember(member)">
+                      <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.familyMembers" :key="item.id"></el-option>
+                    </el-select>
+                    <el-select v-model="member.gender" placeholder="请选择性别">
+                      <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.genderList" :key="item.id"></el-option>
+                    </el-select>
+                    <el-input clearable v-model="member.onsetAge" placeholder="填写发病年龄"></el-input>
+                    <el-button @click.prevent="removeRow(mr.familyHistory.otherFamilyHistory.onsetMembers, index)" type="danger" icon="el-icon-delete"></el-button>
                   </el-form-item>
                 </template>
               </el-form-item>
