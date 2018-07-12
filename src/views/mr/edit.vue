@@ -2272,8 +2272,8 @@
                     <el-radio label="1">有</el-radio>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="3级病变">
-                  <el-radio-group v-model="mr.specialExamination.pci.isGrade3Lesions">
+                <el-form-item label="三支病变">
+                  <el-radio-group v-model="mr.specialExamination.pci.isTripleVesselDisease">
                     <el-radio label="0">无</el-radio>
                     <el-radio label="1">有</el-radio>
                   </el-radio-group>
