@@ -247,7 +247,7 @@
             <el-tag type="info" @click.native="goAnchor('#anchor-deep-venous-thrombosis')">深静脉血栓</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-old-ischemic-stroke')">既往缺血性卒中</el-tag>
             <el-tag type="info" @click.native="goAnchor('#anchor-vascular-diseases')">血管性疾病史</el-tag>
-            <el-tag type="info" @click.native="goAnchor('#anchor-hemorrhage')">出血病史</el-tag>
+            <!-- <el-tag type="info" @click.native="goAnchor('#anchor-hemorrhage')">出血病史</el-tag> -->
             <el-tag type="info" @click.native="goAnchor('#anchor-bleeding')">出血史</el-tag>
             <br><br><span>危险因素：</span>
             <el-tag type="info" @click.native="goAnchor('#anchor-smoking')">吸烟</el-tag>
@@ -560,7 +560,7 @@
               </el-form-item>
             </div>
           </el-card>
-          <el-card id="anchor-hemorrhage">
+          <!-- <el-card id="anchor-hemorrhage">
             <div slot="header"><span>出血病史</span></div>
             <div>
               <el-form-item label="有无出血病史">
@@ -589,7 +589,7 @@
                 </template>
               </el-form-item>
             </div>
-          </el-card>
+          </el-card> -->
           <el-card id="anchor-bleeding">
             <div slot="header"><span>出血史</span></div>
             <div>
@@ -602,17 +602,19 @@
                   <el-form-item label="病因">
                     <el-button icon="el-icon-plus" size="mini" type="primary"
                     @click.prevent="addRow(mr.anamnesis.bleedingCauses,
-                    {cause: '',onsetTime: ''})">
+                    {cause: '', causeOthers: '', onsetTime: '', onsetFrequency: ''})">
                     添加</el-button>
                   </el-form-item>
                   <el-form-item
                     v-for="(cause, index) in mr.anamnesis.bleedingCauses"
                     :label="'病因' + (index + 1)"
                     :key="cause.id">
-                    <el-select v-model="cause.typeName" placeholder="请选择病因">
+                    <el-select v-model="cause.cause" placeholder="请选择病因">
                       <el-option :label="item.text" :value="item.id" v-for="item in staticIndex.bleedingCauses" :key="item.id"></el-option>
                     </el-select>
+                    <el-input clearable v-model="cause.causeOthers" placeholder="填写其他病因" v-if="cause.cause==='-1'"></el-input>
                     <el-input clearable v-model="cause.onsetTime" placeholder="填写发生时间"></el-input>
+                    <el-input clearable v-model="cause.onsetFrequency" placeholder="填写发生次数" style="vertical-align:baseline;"><template slot="append">次</template></el-input>
                     <el-button @click.prevent="removeRow(mr.anamnesis.bleedingCauses, index)" type="danger" icon="el-icon-delete"></el-button>
                   </el-form-item>
                 </template>
