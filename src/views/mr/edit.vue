@@ -1187,6 +1187,11 @@
               </el-checkbox-group>
             </el-form-item>
           </el-form-item>
+          <el-form-item label="周围血管征（多选）">
+            <el-checkbox-group v-model="mr.physicalExamination.peripheralVascularSigns">
+                <el-checkbox v-for="item in staticIndex.peripheralVascularSigns" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
+              </el-checkbox-group>
+          </el-form-item>
           <el-form-item label="脉搏">
             <el-input clearable v-model="mr.physicalExamination.pulse"><template slot="append">次/分钟</template></el-input>
           </el-form-item>
