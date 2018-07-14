@@ -2109,15 +2109,15 @@
                   </el-form-item>
                 </template>
               </el-form-item>
-              <el-form-item label="左室附壁血栓">
-                <el-radio-group v-model="mr.specialExamination.ucg.isLeftVentricularThrombosis">
+              <el-form-item label="附壁血栓">
+                <el-radio-group v-model="mr.specialExamination.ucg.isVentricularThrombosis">
                   <el-radio label="0">否</el-radio>
                   <el-radio label="1">是</el-radio>
                 </el-radio-group>
-                <template v-if="mr.specialExamination.ucg.isLeftVentricularThrombosis==='1'">
+                <template v-if="mr.specialExamination.ucg.isVentricularThrombosis==='1'">
                   <el-form-item label="部位（多选）">
-                    <el-checkbox-group v-model="mr.specialExamination.ucg.leftVentricularThrombosisParts">
-                      <el-checkbox v-for="item in staticIndex.ucgParts" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
+                    <el-checkbox-group v-model="mr.specialExamination.ucg.ventricularThrombosisParts">
+                      <el-checkbox v-for="item in staticIndex.ventricularThrombosisParts" :key="item.id" :label="item.id">{{item.text}}</el-checkbox>
                     </el-checkbox-group>
                   </el-form-item>
                 </template>
