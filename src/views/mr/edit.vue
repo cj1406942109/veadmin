@@ -24,7 +24,7 @@
             <el-radio-group v-model="mr.basicInfo.gender"><el-radio label="男">男</el-radio><el-radio label="女">女</el-radio></el-radio-group>
           </el-form-item>
           <el-form-item label="年龄" prop="basicInfo.age">
-            <el-input clearable v-model="mr.basicInfo.age"></el-input>
+            <el-input clearable v-model.number="mr.basicInfo.age"></el-input>
           </el-form-item>
           <el-form-item label="主治医生" prop="basicInfo.doctor">
             <el-select v-model="mr.basicInfo.doctor" placeholder="请选择主治医生">
@@ -34,14 +34,14 @@
           <el-form-item label="记录者" prop="basicInfo.recorder">
             <el-input clearable v-model="mr.basicInfo.recorder"></el-input>
           </el-form-item>
+          <el-form-item label="身份证号" prop="basicInfo.idNum">
+            <el-input clearable v-model="mr.basicInfo.idNum"></el-input>
+          </el-form-item>
           <el-form-item label="床位号" prop="basicInfo.bedNum">
             <el-input clearable v-model="mr.basicInfo.bedNum"></el-input>
           </el-form-item>
           <el-form-item label="就诊卡号" prop="basicInfo.medicalCardNum">
             <el-input clearable v-model="mr.basicInfo.medicalCardNum"></el-input>
-          </el-form-item>
-          <el-form-item label="身份证号" prop="basicInfo.idNum">
-            <el-input clearable v-model="mr.basicInfo.idNum"></el-input>
           </el-form-item>
           <el-form-item label="住院时间" v-if="screen.size.id>=2">
             <el-date-picker v-model="mr.basicInfo.hospitalizationTime" type="datetimerange" range-separator="至" start-placeholder="住院开始日期" end-placeholder="住院结束日期" value-format="timestamp"></el-date-picker>
@@ -2643,13 +2643,13 @@ export default {
         // 包含二级属性的值，需要加引号才能生效
         'basicInfo.name': [{ required: true, message: '患者姓名不能为空', trigger: 'blur' }],
         // 'basicInfo.medicalCardNum': [{ required: true, message: '患者就诊卡号不能为空', trigger: 'blur' }],
-        'basicInfo.idNum': [{ pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/, message: '身份证号格式错误', trigger: 'blur' }],
-        'cellphone1|cellphone2|telephone': [{ validator: checkContactInfo, trigger: 'blur' }],
-        'basicInfo.gender': [{ required: true, message: '请选择患者性别', trigger: 'blur' }],
-        'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }, { type: 'number', message: '年龄必须为数字值' }],
+        'basicInfo.idNum': [{ pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/, message: '身份证号格式错误', trigger: ['blur', 'change'] }],
+        'cellphone1|cellphone2|telephone': [{ validator: checkContactInfo, trigger: ['blur', 'change'] }],
+        'basicInfo.gender': [{ required: true, message: '请选择患者性别', trigger: 'change' }],
+        'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }, { type: 'number', message: '年龄必须为数字值', trigger: ['blur', 'change'] }],
         'basicInfo.admissionNum': [{ required: true, message: '患者住院号不能为空', trigger: 'blur' }],
         // 'basicInfo.bedNum': [{ required: true, message: '患者床位号不能为空', trigger: 'blur' }],
-        'basicInfo.doctor': [{ required: true, message: '请选择患者主治医生', trigger: 'blur' }],
+        'basicInfo.doctor': [{ required: true, message: '请选择患者主治医生', trigger: 'change' }],
         'basicInfo.recorder': [{ required: true, message: '记录者不能为空', trigger: 'blur' }]
       },
 
@@ -2746,49 +2746,56 @@ export default {
       }
     },
     submit () {
-      this.$confirm('点击确定将保存已填写的所有信息，再次编辑需要在病历列表中选择操作, 是否继续？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        if (this.mr._id && this.mr._id !== '') {
-          // 编辑
-          updateMr(this.mr).then(response => {
-            if (response.status) {
-              this.$message({
-                type: 'success',
-                message: '保存成功!'
+      this.$refs['mrForm'].validate((valid) => {
+        if (valid) {
+          this.$confirm('点击确定将保存已填写的所有信息，再次编辑需要在病历列表中选择操作, 是否继续？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            if (this.mr._id && this.mr._id !== '') {
+              // 编辑
+              updateMr(this.mr).then(response => {
+                if (response.status) {
+                  this.$message({
+                    type: 'success',
+                    message: '保存成功!'
+                  })
+                  this.$router.push({ path: '/mr' })
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: '保存失败，请稍后重试!'
+                  })
+                }
               })
-              this.$router.push({ path: '/mr' })
             } else {
-              this.$message({
-                type: 'error',
-                message: '保存失败，请稍后重试!'
+              // 新增
+              insertMr(this.mr).then(response => {
+                if (response.status) {
+                  this.$message({
+                    type: 'success',
+                    message: '保存成功!'
+                  })
+                  this.$router.push({ path: '/mr' })
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: '保存失败，请稍后重试!'
+                  })
+                }
               })
             }
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消保存'
+            })
           })
         } else {
-          // 新增
-          insertMr(this.mr).then(response => {
-            if (response.status) {
-              this.$message({
-                type: 'success',
-                message: '保存成功!'
-              })
-              this.$router.push({ path: '/mr' })
-            } else {
-              this.$message({
-                type: 'error',
-                message: '保存失败，请稍后重试!'
-              })
-            }
-          })
+          console.log('error submit!!')
+          return false
         }
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消保存'
-        })
       })
     },
     goAnchor (selector) {
