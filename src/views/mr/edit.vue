@@ -2646,7 +2646,7 @@ export default {
         'basicInfo.idNum': [{ pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/, message: '身份证号格式错误', trigger: ['blur', 'change'] }],
         'cellphone1|cellphone2|telephone': [{ validator: checkContactInfo, trigger: ['blur', 'change'] }],
         'basicInfo.gender': [{ required: true, message: '请选择患者性别', trigger: 'change' }],
-        'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }, { type: 'number', message: '年龄必须为数字值', trigger: ['blur', 'change'] }],
+        'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }, { type: 'integer', message: '年龄必须为数字值', trigger: ['blur', 'change'] }],
         'basicInfo.admissionNum': [{ required: true, message: '患者住院号不能为空', trigger: 'blur' }],
         // 'basicInfo.bedNum': [{ required: true, message: '患者床位号不能为空', trigger: 'blur' }],
         'basicInfo.doctor': [{ required: true, message: '请选择患者主治医生', trigger: 'change' }],
@@ -2815,6 +2815,8 @@ export default {
     getMr(this.$route.params.id).then(response => {
       // console.log(response)
       this.mr = response.data.data
+      // element组件bug v-model.number 手动输入数字时能正常通过验证，但是有初始值为字符串类型的数值就会出错。
+      this.mr.basicInfo.age = parseInt(this.mr.basicInfo.age)
       this.mrLoading = false
     }).catch(error => {
       console.log(error)
