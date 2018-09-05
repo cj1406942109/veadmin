@@ -2598,29 +2598,29 @@
 </template>
 
 <script>
-import { getMr, insertMr, updateMr } from '@/api/mr'
+import { getMr, insertMr, updateMr, checkMrByName } from '@/api/mr'
 import { mapGetters } from 'vuex'
 import LocationPicker from '@/components/location-picker'
 export default {
   data () {
     // 自定义联系方式校验规则
-    let checkContactInfo = (rule, value, callback) => {
-      const inputGroup = rule.field.split('|')
-      let cellphone1 = this.mr.basicInfo[inputGroup[0]]
-      let cellphone2 = this.mr.basicInfo[inputGroup[1]]
-      let telephone = this.mr.basicInfo[inputGroup[2]]
-      if (!cellphone1 && !cellphone2 && !telephone) {
-        callback(new Error('请至少填写联系方式中的一项'))
-      } else {
-        if (cellphone1 && !/1[0-9]{10}/.test(cellphone1)) {
-          callback(new Error('手机号1格式错误'))
-        }
-        if (cellphone2 && !/1[0-9]{10}/.test(cellphone2)) {
-          callback(new Error('手机号2格式错误'))
-        }
-        callback()
-      }
-    }
+    // let checkContactInfo = (rule, value, callback) => {
+    //   const inputGroup = rule.field.split('|')
+    //   let cellphone1 = this.mr.basicInfo[inputGroup[0]]
+    //   let cellphone2 = this.mr.basicInfo[inputGroup[1]]
+    //   let telephone = this.mr.basicInfo[inputGroup[2]]
+    //   if (!cellphone1 && !cellphone2 && !telephone) {
+    //     callback(new Error('请至少填写联系方式中的一项'))
+    //   } else {
+    //     if (cellphone1 && !/1[0-9]{10}/.test(cellphone1)) {
+    //       callback(new Error('手机号1格式错误'))
+    //     }
+    //     if (cellphone2 && !/1[0-9]{10}/.test(cellphone2)) {
+    //       callback(new Error('手机号2格式错误'))
+    //     }
+    //     callback()
+    //   }
+    // }
     return {
       // 页面提示信息
       prompt: '提示：填写完病历中患者的基本信息、现病史、既往史、家族史、体格检查和常规检查的相关数据后，可以选择点击保存病历，会自动生成初步分析结果以及后续的检查（特殊检查）建议',
@@ -2644,7 +2644,7 @@ export default {
         'basicInfo.name': [{ required: true, message: '患者姓名不能为空', trigger: 'blur' }],
         // 'basicInfo.medicalCardNum': [{ required: true, message: '患者就诊卡号不能为空', trigger: 'blur' }],
         'basicInfo.idNum': [{ pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}[0-9Xx]$)/, message: '身份证号格式错误', trigger: ['blur', 'change'] }],
-        'cellphone1|cellphone2|telephone': [{ validator: checkContactInfo, trigger: ['blur', 'change'] }],
+        // 'cellphone1|cellphone2|telephone': [{ validator: checkContactInfo, trigger: ['blur', 'change'] }],
         'basicInfo.gender': [{ required: true, message: '请选择患者性别', trigger: 'change' }],
         'basicInfo.age': [{ required: true, message: '患者年龄不能为空', trigger: 'blur' }, { type: 'integer', message: '年龄必须为数字值', trigger: ['blur', 'change'] }],
         'basicInfo.admissionNum': [{ required: true, message: '患者住院号不能为空', trigger: 'blur' }],
@@ -2771,17 +2771,58 @@ export default {
               })
             } else {
               // 新增
-              insertMr(this.mr).then(response => {
-                if (response.status) {
-                  this.$message({
-                    type: 'success',
-                    message: '保存成功!'
-                  })
-                  this.$router.push({ path: '/mr' })
+              // 检查是否已经存在同名的患者，如果存在，给出提示，防止提交重复病历
+              checkMrByName(this.mr.basicInfo.name).then(response => {
+                if (response.data.status) {
+                  console.log(response)
+                  if (response.data.data.length > 0) {
+                    // 同名患者存在，弹出确认弹窗，是否保存
+                    this.$confirm('病历库中已存在同名患者，是否继续新建病历？', '提示', {
+                      confirmButtonText: '确定',
+                      cancelButtonText: '取消',
+                      type: 'warning'
+                    }).then(() => {
+                      insertMr(this.mr).then(response => {
+                        if (response.status) {
+                          this.$message({
+                            type: 'success',
+                            message: '保存成功!'
+                          })
+                          this.$router.push({ path: '/mr' })
+                        } else {
+                          this.$message({
+                            type: 'error',
+                            message: '保存失败，请稍后重试!'
+                          })
+                        }
+                      })
+                    }).catch(() => {
+                      this.$message({
+                        type: 'info',
+                        message: '已取消新建病历'
+                      })
+                    })
+                  } else {
+                    // 同名患者不存在直接保存
+                    insertMr(this.mr).then(response => {
+                      if (response.status) {
+                        this.$message({
+                          type: 'success',
+                          message: '保存成功!'
+                        })
+                        this.$router.push({ path: '/mr' })
+                      } else {
+                        this.$message({
+                          type: 'error',
+                          message: '保存失败，请稍后重试!'
+                        })
+                      }
+                    })
+                  }
                 } else {
                   this.$message({
                     type: 'error',
-                    message: '保存失败，请稍后重试!'
+                    message: '患者姓名存在状态查询失败，请稍后重试！'
                   })
                 }
               })
@@ -2816,7 +2857,9 @@ export default {
       // console.log(response)
       this.mr = response.data.data
       // element组件bug v-model.number 手动输入数字时能正常通过验证，但是有初始值为字符串类型的数值就会出错。
-      this.mr.basicInfo.age = parseInt(this.mr.basicInfo.age)
+      if (this.$route.params.id) {
+        this.mr.basicInfo.age = parseInt(this.mr.basicInfo.age)
+      }
       this.mrLoading = false
     }).catch(error => {
       console.log(error)

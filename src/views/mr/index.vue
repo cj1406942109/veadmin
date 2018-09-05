@@ -2,6 +2,15 @@
   <div class="content-wrapper">
     <div class="function-wrapper">
       <el-button type="primary"  icon="el-icon-plus" @click="goAdd">新增病历</el-button>
+      <el-input placeholder="请输入患者姓名" class="search-box" v-model="searchName" @input="search(0)">
+        <template slot="prepend">
+          <el-tooltip placement="top">
+            <div slot="content">输入患者姓名自动对当前页进行检索<br>点击搜索按钮对所有页面进行检索</div>
+            <el-button icon="el-icon-question"></el-button>
+          </el-tooltip>
+        </template>
+        <el-button slot="append" icon="el-icon-search" @click="search(1)"></el-button>
+      </el-input>
     </div>
     <div class="table-wrapper">
       <el-table :data="mrList" v-loading.body="mrListLoading" style="width: 100%" stripe>
@@ -60,17 +69,20 @@
 </template>
 
 <script>
-import { getMrList } from '@/api/mr'
+import { getMrList, getMrListByName } from '@/api/mr'
 export default {
   data () {
     return {
+      // 记录当前病历列表，用于筛选之后数据恢复
+      currentMrList: null,
       mrList: null,
       mrListLoading: true,
       pagination: {
-        pageSize: 5,
+        pageSize: 20,
         pageTotal: 0,
         pageNum: 1
-      }
+      },
+      searchName: ''
     }
   },
   mounted () {
@@ -81,7 +93,7 @@ export default {
       getMrList(this.pagination.pageNum, this.pagination.pageSize).then(response => {
         this.mrListLoading = false
         if (response.data.data) {
-          this.mrList = response.data.data
+          this.mrList = this.currentMrList = response.data.data
           this.pagination.pageTotal = response.data.total
         } else {
           this.$message({
@@ -110,6 +122,39 @@ export default {
       this.pagination.pageNum = val
       this.getMrList()
       // console.log(`当前页: ${val}`)
+    },
+    search (allPage) {
+      if (allPage) {
+        if (!this.searchName.trim()) {
+          return false
+        }
+        // 访问后台接口在所有数据中查询
+        this.mrListLoading = true
+        getMrListByName(this.pagination.pageNum, this.pagination.pageSize, this.searchName).then(response => {
+          this.mrListLoading = false
+          console.log(response)
+          if (response.data.data) {
+            this.mrList = response.data.data
+            this.pagination.pageTotal = response.data.total
+          } else {
+            this.$message({
+              type: 'error',
+              message: '病历数据加载失败，请重试'
+            })
+          }
+        })
+      } else {
+        // 在当前页面的数据中查询
+        console.log(this.searchName)
+        let tempList = []
+        for (let i = 0; i < this.currentMrList.length; i++) {
+          if (this.currentMrList[i].name.indexOf(this.searchName.trim()) >= 0) {
+            tempList.push(this.currentMrList[i])
+          }
+        }
+        this.mrList = tempList
+        this.pagination.pageTotal = this.mrList.length
+      }
     }
   }
 }
@@ -121,6 +166,10 @@ export default {
   background-color: #fff;
   .function-wrapper {
     padding: 20px;
+    .search-box {
+      margin-top: 20px;
+      max-width: 500px;
+    }
   }
   .table-wrapper {
     padding: 0 20px;

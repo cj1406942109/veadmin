@@ -12,6 +12,28 @@ export function getMrList (pageNum, pageSize) {
   })
 }
 
+export function getMrListByName (pageNum, pageSize, name) {
+  return request({
+    url: '/record/getPartOfAllRecordsByName',
+    method: 'get',
+    params: {
+      sort: '',
+      page: pageNum,
+      per_page: pageSize,
+      search_name: name
+    }
+  })
+}
+export function checkMrByName (name) {
+  return request({
+    url: '/record/checkRecordsByName',
+    method: 'get',
+    params: {
+      name
+    }
+  })
+}
+
 export function getMr (recordId) {
   return request({
     // baseURL: 'http://116.62.148.24:8008',
