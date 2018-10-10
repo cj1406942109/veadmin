@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper">
     <h2>Welcome to Vue Element Admin Management System</h2>
-    <h3>Dashboard 1</h3>
+    <h3>Dashboard 2</h3>
   </div>
 </template>
 

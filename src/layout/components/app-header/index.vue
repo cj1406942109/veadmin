@@ -13,8 +13,8 @@
             <i class="el-icon-arrow-down el-icon--right hidden-sm-and-down"></i>
           </span>
            <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>我的信息</el-dropdown-item>
-            <el-dropdown-item divided @click.native="handleLogout">退出登录</el-dropdown-item>
+            <el-dropdown-item>My Profile</el-dropdown-item>
+            <el-dropdown-item divided @click.native="handleLogout">Log Out</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>

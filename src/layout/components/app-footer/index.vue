@@ -1,6 +1,6 @@
 <template>
   <div class="app-footer">
-    <span>{{new Date().getFullYear()}} &copy;<abbr title="Intelligent Medical">IM</abbr> </span>
+    <span>{{new Date().getFullYear()}} &copy;<abbr title="Vue Element Admin Management">VEAdmin</abbr> </span>
     <span>Powered by <abbr title="WuHan University">WHU</abbr> |
       <a target="_blank" href="javascript:;">LiBingTeam</a>
     </span>

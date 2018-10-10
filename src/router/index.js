@@ -20,11 +20,20 @@ export const constantRouterMap = [
     path: '',
     component: Layout,
     redirect: 'dashboard',
+    meta: {
+      title: 'Dashboard',
+      icon: 'dashboard'
+    },
     children: [{
       path: 'dashboard',
-      name: 'dashboard',
+      name: 'dashboard1',
       component: _import('dashboard/index'),
-      meta: { title: '主页', icon: 'dashboard' }
+      meta: { title: 'Dashboard 1', icon: 'bar-chart' }
+    }, {
+      path: 'dashboard2',
+      name: 'dashboard2',
+      component: _import('dashboard/index2'),
+      meta: { title: 'Dashboard 2', icon: 'line-chart' }
     }]
   }
 ]
