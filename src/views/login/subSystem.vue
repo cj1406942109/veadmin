@@ -5,7 +5,7 @@
         <img src="./logo.png" alt="logo">
       </el-header>
       <el-main>
-        <h2>同济医院心血管病三级防治管理系统</h2>
+        <h2>心血管疾病三级防治管理系统</h2>
           <el-alert title="请选择要进入的子系统" type="warning" show-icon :closable="false"></el-alert>
         <el-row :gutter="20">
           <el-col v-for="card in cardList" :key="card.id" :xs="24" :sm="12"  :md="6">

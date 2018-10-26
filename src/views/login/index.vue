@@ -5,8 +5,8 @@
         <img src="./logo.png" alt="logo">
       </el-header>
       <el-main>
-        <el-row :gutter="20">
-          <el-col :xs="24" :sm="12" :md="12" :lg="16" class="hidden-xs-only">
+        <el-row :gutter="20" type="flex" justify="center">
+          <!-- <el-col :xs="24" :sm="12" :md="12" :lg="16" class="hidden-xs-only">
             <div class="info-wrapper">
                 <el-carousel indicator-position="outside" height="485px" :interval="5000">
                   <el-carousel-item v-for="item in 3" :key="item">
@@ -14,7 +14,7 @@
                   </el-carousel-item>
                 </el-carousel>
             </div>
-          </el-col>
+          </el-col> -->
           <el-col :xs="24" :sm="12" :md="12" :lg="8">
             <div class="form-wrapper">
               <el-card class="box-card">
